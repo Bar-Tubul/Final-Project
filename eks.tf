@@ -48,6 +48,11 @@ resource "aws_eks_node_group" "node_group_application" {
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
 
+  # Specify the security groups here
+  resources {
+    security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
+  }
+
   scaling_config {
     desired_size = var.app_desired_capacity
     max_size     = var.app_max_size
@@ -64,6 +69,11 @@ resource "aws_eks_node_group" "node_group_monitoring" {
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Nodes only in the first AZ
 
+  # Specify the security group here as well
+  resources {
+    security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
+  }
+
   scaling_config {
     desired_size = var.monitoring_desired_capacity
     max_size     = var.monitoring_max_size
@@ -72,6 +82,7 @@ resource "aws_eks_node_group" "node_group_monitoring" {
 
   depends_on = [aws_eks_cluster.my_cluster]
 }
+
 
 # Create IAM Role for Node Groups
 resource "aws_iam_role" "eks_node_role" {
