@@ -33,6 +33,8 @@ resource "aws_eks_cluster" "my_cluster" {
       aws_subnet.bop_private_subnet[0].id, 
       aws_subnet.bop_private_subnet[1].id  # Use only two AZs
     ]
+    endpoint_private_access = true  # Enable private access
+    endpoint_public_access  = false  # Disable public access for security
   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_policy]
@@ -88,8 +90,6 @@ resource "aws_eks_node_group" "node_group_application" {
   }
 
   depends_on = [aws_eks_cluster.my_cluster]
-
-  # No additional parameters required for defaults
 }
 
 # Node Group for Monitoring (only in one AZ)
@@ -106,9 +106,8 @@ resource "aws_eks_node_group" "node_group_monitoring" {
   }
 
   depends_on = [aws_eks_cluster.my_cluster]
-
-  # No additional parameters required for defaults
 }
+
 
 
 
