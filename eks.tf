@@ -87,14 +87,14 @@ resource "aws_eks_node_group" "node_group_application" {
     min_size     = var.app_min_size
   }
 
-  # Attach security group directly in the node group resource
-  network_config {
-    network_interfaces {
-      security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
-    }
-  }
-
+  # Directly specify the security group here
   depends_on = [aws_eks_cluster.my_cluster]
+
+  # Specify the security group for the node group directly
+  node_group {
+    # Attach the security group directly here
+    security_groups = [aws_security_group.bop_web_sg.id]
+  }
 }
 
 # Node Group for Monitoring (only in one AZ)
@@ -110,15 +110,15 @@ resource "aws_eks_node_group" "node_group_monitoring" {
     min_size     = var.monitoring_min_size
   }
 
-  # Attach security group directly in the node group resource
-  network_config {
-    network_interfaces {
-      security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
-    }
-  }
-
   depends_on = [aws_eks_cluster.my_cluster]
+
+  # Specify the security group for the node group directly
+  node_group {
+    # Attach the security group directly here
+    security_groups = [aws_security_group.bop_web_sg.id]
+  }
 }
+
 
 
 
