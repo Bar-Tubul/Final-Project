@@ -1,3 +1,8 @@
+# Specify the AWS provider and region
+provider "aws" {
+  region = var.region
+}
+
 # Create IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
   name = "${var.eks_cluster_name}-role"
@@ -44,17 +49,20 @@ resource "aws_eks_cluster" "my_cluster" {
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.node_group_name}-role"
 
+  # Add both EKS and EC2 to the trust relationship
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
-          Service = "eks.amazonaws.com"  # Only EKS service principal
+          Service = [
+            "eks.amazonaws.com",  # EKS service principal
+            "ec2.amazonaws.com"   # EC2 service principal
+          ]
         }
-        Effect    = "Allow"
-        Sid       = ""
-      },
+        Action = "sts:AssumeRole"
+      }
     ]
   })
 }
@@ -68,6 +76,12 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+# Attach EC2 Container Registry read-only policy
+resource "aws_iam_role_policy_attachment" "ecr_readonly_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 # Node Group for Application (spans both AZs)
