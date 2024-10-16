@@ -1,7 +1,3 @@
-# Specify the AWS provider and region
-provider "aws" {
-  region = var.region
-}
 
 # Create IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
