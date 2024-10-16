@@ -101,7 +101,6 @@ resource "aws_route_table_association" "bop_private_association" {
   route_table_id    = aws_route_table.bop_private_rt.id
 }
 
-# Create Security Group for Web Access
 resource "aws_security_group" "bop_web_sg" {
   vpc_id = aws_vpc.bop_vpc.id
 
@@ -121,6 +120,14 @@ resource "aws_security_group" "bop_web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow HTTPS access on port 443 from anywhere
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -133,3 +140,4 @@ resource "aws_security_group" "bop_web_sg" {
     Name = "bop-web-sg"
   }
 }
+
