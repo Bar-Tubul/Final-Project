@@ -83,7 +83,10 @@ resource "aws_iam_role" "eks_node_role" {
       {
         Action    = "sts:AssumeRole"
         Principal = {
-          Service = "eks.amazonaws.com"
+          Service = [
+            "eks.amazonaws.com",
+            "ec2.amazonaws.com"  # Include EC2 service principal here
+          ]
         }
         Effect    = "Allow"
         Sid       = ""
@@ -102,3 +105,4 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
+
