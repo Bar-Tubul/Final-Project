@@ -43,7 +43,10 @@ resource "aws_eks_node_group" "node_group_application" {
   cluster_name    = aws_eks_cluster.my_cluster.name
   node_group_name = "${var.node_group_name}-application"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [aws_subnet.private_subnet[0].id, aws_subnet.private_subnet[1].id]  # Nodes in both AZs
+  subnet_ids      = [
+    aws_subnet.bop_private_subnet[0].id, 
+    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
+  ]
 
   scaling_config {
     desired_size = var.app_desired_capacity
@@ -59,7 +62,7 @@ resource "aws_eks_node_group" "node_group_monitoring" {
   cluster_name    = aws_eks_cluster.my_cluster.name
   node_group_name = "${var.node_group_name}-monitoring"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [aws_subnet.private_subnet[0].id]  # Nodes only in the first AZ
+  subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Nodes only in the first AZ
 
   scaling_config {
     desired_size = var.monitoring_desired_capacity
