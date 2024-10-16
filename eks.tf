@@ -87,14 +87,9 @@ resource "aws_eks_node_group" "node_group_application" {
     min_size     = var.app_min_size
   }
 
-  # Directly specify the security group here
   depends_on = [aws_eks_cluster.my_cluster]
 
-  # Specify the security group for the node group directly
-  node_group {
-    # Attach the security group directly here
-    security_groups = [aws_security_group.bop_web_sg.id]
-  }
+  # No additional parameters required for defaults
 }
 
 # Node Group for Monitoring (only in one AZ)
@@ -112,12 +107,9 @@ resource "aws_eks_node_group" "node_group_monitoring" {
 
   depends_on = [aws_eks_cluster.my_cluster]
 
-  # Specify the security group for the node group directly
-  node_group {
-    # Attach the security group directly here
-    security_groups = [aws_security_group.bop_web_sg.id]
-  }
+  # No additional parameters required for defaults
 }
+
 
 
 
