@@ -75,9 +75,9 @@ resource "aws_route_table" "bop_public_rt" {
 
 # Associate Public Route Table with Public Subnets
 resource "aws_route_table_association" "bop_public_association" {
-  count             = length(var.public_subnet_cidrs)
-  subnet_id         = aws_subnet.bop_public_subnet[count.index].id
-  route_table_id    = aws_route_table.bop_public_rt.id
+  count          = length(var.public_subnet_cidrs)
+  subnet_id      = aws_subnet.bop_public_subnet[count.index].id
+  route_table_id = aws_route_table.bop_public_rt.id
 }
 
 # Create Private Route Table
@@ -96,11 +96,12 @@ resource "aws_route_table" "bop_private_rt" {
 
 # Associate Private Route Table with Private Subnets
 resource "aws_route_table_association" "bop_private_association" {
-  count             = length(var.private_subnet_cidrs)
-  subnet_id         = aws_subnet.bop_private_subnet[count.index].id
-  route_table_id    = aws_route_table.bop_private_rt.id
+  count          = length(var.private_subnet_cidrs)
+  subnet_id      = aws_subnet.bop_private_subnet[count.index].id
+  route_table_id = aws_route_table.bop_private_rt.id
 }
 
+# Create Security Group for Web Application
 resource "aws_security_group" "bop_web_sg" {
   vpc_id = aws_vpc.bop_vpc.id
 
@@ -140,4 +141,3 @@ resource "aws_security_group" "bop_web_sg" {
     Name = "bop-web-sg"
   }
 }
-
