@@ -81,16 +81,16 @@ resource "aws_eks_node_group" "node_group_application" {
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
 
-  # Specify the security groups here
+  # Specify the security groups directly
   scaling_config {
     desired_size = var.app_desired_capacity
     max_size     = var.app_max_size
     min_size     = var.app_min_size
   }
 
-  # Attach security groups directly
+  # Attach security groups directly as an argument
   resources {
-    security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
+    security_group_ids = [aws_security_group.bop_web_sg.id]  # Attach security group
   }
 
   depends_on = [aws_eks_cluster.my_cluster]
@@ -110,12 +110,13 @@ resource "aws_eks_node_group" "node_group_monitoring" {
     min_size     = var.monitoring_min_size
   }
 
-  # Attach security groups directly
+  # Attach security groups directly as an argument
   resources {
-    security_groups = [aws_security_group.bop_web_sg.id]  # Attach security group
+    security_group_ids = [aws_security_group.bop_web_sg.id]  # Attach security group
   }
 
   depends_on = [aws_eks_cluster.my_cluster]
 }
+
 
 
