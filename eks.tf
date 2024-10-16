@@ -50,10 +50,7 @@ resource "aws_iam_role" "eks_node_role" {
       {
         Action    = "sts:AssumeRole"
         Principal = {
-          Service = [
-            "eks.amazonaws.com",
-            "ec2.amazonaws.com"  # Include EC2 service principal here
-          ]
+          Service = "eks.amazonaws.com"  # Only EKS service principal
         }
         Effect    = "Allow"
         Sid       = ""
@@ -107,9 +104,3 @@ resource "aws_eks_node_group" "node_group_monitoring" {
 
   depends_on = [aws_eks_cluster.my_cluster]
 }
-
-
-
-
-
-
