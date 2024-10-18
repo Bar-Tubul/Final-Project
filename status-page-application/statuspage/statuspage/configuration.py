@@ -11,7 +11,7 @@ ALLOWED_HOSTS = ['*']
 # PostgreSQL database configuration. See the Django documentation for a complete list of available parameters:
 #   https://docs.djangoproject.com/en/stable/ref/settings/#databases
 DATABASE = {
-    'NAME': 'statuspage',         # Database name
+    'NAME': 'status-page',         # Database name
     'USER': 'statuspage',               # PostgreSQL username
     'PASSWORD': 'P@ssw0rd',           # PostgreSQL password
     'HOST': '3.230.171.122',      # Database server
