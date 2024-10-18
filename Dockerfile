@@ -38,8 +38,5 @@ CMD ["bash", "upgrade.sh"]
 # Define the entry point to run your app using Gunicorn
 WORKDIR /app/status-page-application/statuspage
 
-RUN python3 manage.py createsuperuser --noinput --username 'admin' --email 'peer.vetzler@nitzanim.tech' && \
-    echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='admin'); user.set_password('Passw0rd'); user.save()" | python3 manage.py shell
-
 #Define the entry point to run your app using Gunicorn
 CMD ["gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/status-page-application/gunicorn.py", "statuspage.wsgi:application"]
