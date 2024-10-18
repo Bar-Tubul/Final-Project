@@ -1,45 +1,31 @@
-# Use Ubuntu 20.04 as the base image
-FROM ubuntu:20.04
+# Use the official Nginx base image
+FROM nginx:latest
 
-# Set environment variables to avoid prompts during package installations
-ENV DEBIAN_FRONTEND=noninteractive
+# Install OpenSSL to generate a self-signed SSL certificate
+RUN apt-get update && apt-get install -y openssl
 
-# Install required packages: Python 3.10, git, and other dependencies
-RUN apt-get update && \
-    apt-get install -y software-properties-common git curl && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y python3.10 python3.10-venv python3.10-dev
+# Install Git (and any dependencies)
+RUN apt-get install -y git
+# Create necessary directories for SSL certificates and static files
+RUN mkdir -p /etc/ssl/private /etc/ssl/certs
 
-# Set Python 3.10 as the default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+# Remove the default Nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Install pip
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
-    python3 get-pip.py && \
-    rm get-pip.py
+RUN git clone -b Nginx https://github.com/Bar-Tubul/Final-Project.git /app
 
-# Clone the Git repository
-RUN git clone https://github.com/peervetzler/Final-Project.git /app
+RUN cp /app/nginx.conf /etc/nginx/conf.d/status-page.conf
 
-# Change working directory
-WORKDIR /app/status-page-application
+# Generate a self-signed SSL certificate for HTTPS
+# Modify the subject to match your domain (status-page.example.com)
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/status-page.key \
+    -out /etc/ssl/certs/status-page.crt \
+    -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=status-page.example.com"
 
-# Install Python dependencies
-RUN pip install -r requirements.txt
 
-# Expose any necessary ports (adjust based on your app)
-EXPOSE 8001
+# Expose ports 80 and 443 for HTTP and HTTPS traffic
+EXPOSE 80 443
 
-# Define the entry point to run your app
-CMD ["bash", "upgrade.sh"]
-
-# Define the entry point to run your app using Gunicorn
-WORKDIR /app/status-page-application/statuspage
-
-RUN python3 manage.py createsuperuser --noinput --username '<<name>>' --email '<<gmail>>' && \
-    echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='<<name>>'); user.set_password('<<password>>'); user.save()" | python3 manage.py shell
-
-#Define the entry point to run your app using Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/status-page-application/gunicorn.py", "statuspage.wsgi:application"]
+# Start Nginx in the foreground to keep the container running
+CMD ["nginx", "-g", "daemon off;"]
