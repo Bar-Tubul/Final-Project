@@ -21,7 +21,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Clone the Git repository
-RUN git clone https://github.com/peervetzler/Final-Project.git /app
+RUN git clone -b Statuspage https://github.com/Bar-Tubul/Final-Project.git /app
 
 # Change working directory
 WORKDIR /app/status-page-application
@@ -38,8 +38,8 @@ CMD ["bash", "upgrade.sh"]
 # Define the entry point to run your app using Gunicorn
 WORKDIR /app/status-page-application/statuspage
 
-RUN python3 manage.py createsuperuser --noinput --username '<<name>>' --email '<<gmail>>' && \
-    echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='<<name>>'); user.set_password('<<password>>'); user.save()" | python3 manage.py shell
+RUN python3 manage.py createsuperuser --noinput --username 'admin' --email 'peer.vetzler@nitzanim.tech' && \
+    echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='admin'); user.set_password('Passw0rd'); user.save()" | python3 manage.py shell
 
 #Define the entry point to run your app using Gunicorn
 CMD ["gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/status-page-application/gunicorn.py", "statuspage.wsgi:application"]
