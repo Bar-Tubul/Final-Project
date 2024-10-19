@@ -2,10 +2,12 @@
 FROM python:3.12.3-slim
 
 # Create application directory
-RUN mkdir -p /opt
+RUN mkdir -p /opt/status-page
 
 # Set the working directory
-WORKDIR /opt
+WORKDIR /opt/status-page
+
+COPY . .
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,10 +21,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git
 
 # Clone the specific branch of the Git repository
-RUN git clone -b Statuspage https://github.com/Bar-Tubul/Final-Project.git /opt
+#RUN git clone -b Statuspage https://github.com/Bar-Tubul/Final-Project.git /opt
 
 # Set the working directory to the application
-WORKDIR /opt/status-page-application
+#WORKDIR /opt/status-page-application
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -31,4 +33,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8001
 
 # Default command to run Gunicorn
-CMD ["gunicorn", "--pid", "/var/tmp/status-page.pid", "--pythonpath", "/opt/status-page-application/statuspage", "--config", "/opt/status-page-application/gunicorn.py", "statuspage.wsgi:application", "--bind", "0.0.0.0:8001"]
+CMD ["gunicorn", "--pid", "/var/tmp/status-page.pid", "--pythonpath", "/opt/status-page/statuspage", "--config", "/opt/status-page/gunicorn.py", "statuspage.wsgi:application", "--bind", "0.0.0.0:8001"]
