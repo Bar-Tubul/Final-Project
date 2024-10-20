@@ -1,6 +1,4 @@
-provider "aws" {
-  
-}
+
 resource "aws_db_instance" "default" {
   allocated_storage    = 10
   engine               = "postgres"
