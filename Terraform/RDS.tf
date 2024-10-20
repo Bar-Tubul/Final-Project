@@ -11,7 +11,7 @@ resource "aws_db_instance" "default" {
   db_subnet_group_name = aws_db_subnet_group.default.name
   multi_az             = true
   depends_on           = [aws_subnet.private_subnet] # Depends on created private subnets from the vpc.tf
-  # snapshot_identifier  = "snapshot-id"
+  snapshot_identifier  = "updated-bop-db"
   tags = {
     Name = "BOP-statuspage"  # Tag to name the RDS instance
   }
