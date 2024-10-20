@@ -18,7 +18,7 @@ resource "aws_db_instance" "default" {
   multi_az            = true
   depends_on          = [aws_db_subnet_group.default]  # Ensure this waits for the subnet group
   snapshot_identifier = "updated-bop-db"  # Ensure this matches an existing snapshot
-  db_instance_identifier = "bop-statuspage"  # Set a specific identifier for the RDS instance
+  identifier          = "bop-statuspage"  # Set a specific identifier for the RDS instance
 
   tags = {
     Name = "BOP-statuspage"  # Tag to name the RDS instance
