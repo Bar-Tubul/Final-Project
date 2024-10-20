@@ -1,4 +1,3 @@
-
 # Create IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
   name = "${var.eks_cluster_name}-role"
@@ -78,6 +77,33 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
 resource "aws_iam_role_policy_attachment" "ecr_readonly_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# Create Custom ECR Policy
+resource "aws_iam_policy" "ecr_custom_policy" {
+  name        = "${var.node_group_name}-ECR-Access"
+  description = "Custom policy to allow access to ECR for pulling images"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Attach Custom ECR Policy to Node Groups
+resource "aws_iam_role_policy_attachment" "ecr_custom_policy_attachment" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.ecr_custom_policy.arn
 }
 
 # Node Group for Application (spans both AZs)
