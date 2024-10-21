@@ -1,6 +1,6 @@
 # Create IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
-  name = "bop-eks-cluster-role"
+  name = "${var.eks_cluster_name}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -24,12 +24,12 @@ resource "aws_iam_role_policy_attachment" "eks_policy" {
 }
 
 # Create EKS Cluster
-resource "aws_eks_cluster" "bop_eks_cluster" {
-  name     = "bop-eks-cluster"
+resource "aws_eks_cluster" "my_cluster" {
+  name     = var.eks_cluster_name
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids              = [
+    subnet_ids = [
       aws_subnet.bop_private_subnet[0].id, 
       aws_subnet.bop_private_subnet[1].id  # Use only two AZs
     ]
@@ -44,6 +44,7 @@ resource "aws_eks_cluster" "bop_eks_cluster" {
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.node_group_name}-role"
 
+  # Add both EKS and EC2 to the trust relationship
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -72,6 +73,7 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
+# Attach EC2 Container Registry read-only policy
 resource "aws_iam_role_policy_attachment" "ecr_readonly_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
@@ -104,60 +106,37 @@ resource "aws_iam_role_policy_attachment" "ecr_custom_policy_attachment" {
   policy_arn = aws_iam_policy.ecr_custom_policy.arn
 }
 
-# Node Group for Application 1 (spans both AZs)
-resource "aws_eks_node_group" "application_node_group_1" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
-  node_group_name = "${var.node_group_name}-application-1"
+# Node Group for Application (spans both AZs)
+resource "aws_eks_node_group" "node_group_application" {
+  cluster_name    = aws_eks_cluster.my_cluster.name
+  node_group_name = "${var.node_group_name}-application"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = [
-    aws_subnet.bop_private_subnet[0].id,
-    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
-  ]
-  
-  instance_types   = ["t2.medium"]
-
-  scaling_config {
-    desired_size = 1  # Set to 1 to limit to 1 instance
-    max_size     = 2  # Optional: keep for future scaling
-    min_size     = 1  # Set to 1 for minimum
-  }
-
-  depends_on = [aws_eks_cluster.bop_eks_cluster]
-}
-
-# Node Group for Application 2 (spans both AZs)
-resource "aws_eks_node_group" "application_node_group_2" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
-  node_group_name = "${var.node_group_name}-application-2"
-  node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [
-    aws_subnet.bop_private_subnet[0].id,
+    aws_subnet.bop_private_subnet[0].id, 
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
 
-  instance_types   = ["t2.medium"]
-
   scaling_config {
-    desired_size = 1  # Set to 1 to limit to 1 instance
-    max_size     = 2  # Optional: keep for future scaling
-    min_size     = 1  # Set to 1 for minimum
+    desired_size = var.app_desired_capacity
+    max_size     = var.app_max_size
+    min_size     = var.app_min_size
   }
 
-  depends_on = [aws_eks_cluster.bop_eks_cluster]
+  depends_on = [aws_eks_cluster.my_cluster]
 }
 
 # Node Group for Monitoring (only in one AZ)
 resource "aws_eks_node_group" "node_group_monitoring" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
+  cluster_name    = aws_eks_cluster.my_cluster.name
   node_group_name = "${var.node_group_name}-monitoring"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Nodes only in the first AZ
 
   scaling_config {
-    desired_size = 1  # Set to 1 for monitoring node
-    max_size     = 1  # Set to 1 for monitoring
-    min_size     = 1  # Set to 1 for monitoring
+    desired_size = var.monitoring_desired_capacity
+    max_size     = var.monitoring_max_size
+    min_size     = var.monitoring_min_size
   }
 
-  depends_on = [aws_eks_cluster.bop_eks_cluster]
+  depends_on = [aws_eks_cluster.my_cluster]
 }
