@@ -2,7 +2,7 @@
 resource "aws_security_group" "bop_redis_sg" {
   vpc_id = aws_vpc.bop_vpc.id
 
-  # Allow all inbound traffic (for testing purposes)
+  # Allow all inbound traffic (for testing purposes) - Consider tightening for production use
   ingress {
     from_port   = 0
     to_port     = 0
@@ -23,7 +23,7 @@ resource "aws_security_group" "bop_redis_sg" {
   }
 }
 
-# Create ElastiCache Redis Cluster
+# Create ElastiCache Redis Subnet Group
 resource "aws_elasticache_subnet_group" "bop_redis_subnet_group" {
   name       = "bop-redis-subnet-group"
   subnet_ids = [aws_subnet.bop_private_subnet[0].id, aws_subnet.bop_private_subnet[1].id]
@@ -33,19 +33,20 @@ resource "aws_elasticache_subnet_group" "bop_redis_subnet_group" {
   }
 }
 
+# Create ElastiCache Redis Replication Group
 resource "aws_elasticache_replication_group" "bop_redis" {
-  replication_group_id          = "bop-redis"
-  replication_group_description = "Bop Redis replication group"
-  
-  engine                        = "redis"
-  node_type                     = "cache.t3.micro"     # Use a small instance for testing
-  number_cache_clusters         = 1                    # No replicas, only 1 node
-  automatic_failover_enabled    = false                # No failover since it's a single node
+  replication_group_id = "bop-redis"
+  description          = "Bop Redis replication group"  # Changed from replication_group_description to description
 
-  security_group_ids            = [aws_security_group.bop_redis_sg.id]
-  subnet_group_name             = aws_elasticache_subnet_group.bop_redis_subnet_group.name
+  engine               = "redis"
+  node_type            = "cache.t3.micro"               # Small instance for testing
+  num_cache_clusters   = 1                              # Corrected: Only 1 node, no replicas
+  automatic_failover_enabled = false                    # No failover with a single node
 
-  port                          = 6379
+  security_group_ids   = [aws_security_group.bop_redis_sg.id]
+  subnet_group_name    = aws_elasticache_subnet_group.bop_redis_subnet_group.name
+
+  port                 = 6379
 
   tags = {
     Name = "bop-redis"
