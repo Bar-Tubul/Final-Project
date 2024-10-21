@@ -36,7 +36,7 @@ resource "aws_elasticache_subnet_group" "bop_redis_subnet_group" {
 # Create ElastiCache Redis Replication Group
 resource "aws_elasticache_replication_group" "bop_redis" {
   replication_group_id = "bop-redis"
-  description          = "Bop Redis replication group"  # Changed from replication_group_description to description
+  description          = "Bop Redis"  
 
   engine               = "redis"
   node_type            = "cache.t3.micro"               # Small instance for testing
