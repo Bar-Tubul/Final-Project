@@ -109,14 +109,17 @@ resource "aws_eks_node_group" "application_node_group_1" {
   cluster_name    = aws_eks_cluster.bop_eks_cluster.name
   node_group_name = "${var.node_group_name}-application-1"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Only in the first AZ
+  subnet_ids      = [
+    aws_subnet.bop_private_subnet[0].id,
+    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
+  ]
   
   instance_types   = ["t2.medium"]
 
   scaling_config {
-    desired_size = var.app_desired_capacity
-    max_size     = var.app_max_size
-    min_size     = var.app_min_size
+    desired_size = 1  # Set to 1 to limit to 1 instance
+    max_size     = 2  # Optional: keep for future scaling
+    min_size     = 1  # Set to 1 for minimum
   }
 
   depends_on = [aws_eks_cluster.bop_eks_cluster]
@@ -127,14 +130,17 @@ resource "aws_eks_node_group" "application_node_group_2" {
   cluster_name    = aws_eks_cluster.bop_eks_cluster.name
   node_group_name = "${var.node_group_name}-application-2"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [aws_subnet.bop_private_subnet[1].id]  # Only in the second AZ
+  subnet_ids      = [
+    aws_subnet.bop_private_subnet[0].id,
+    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
+  ]
 
   instance_types   = ["t2.medium"]
 
   scaling_config {
-    desired_size = var.app_desired_capacity
-    max_size     = var.app_max_size
-    min_size     = var.app_min_size
+    desired_size = 1  # Set to 1 to limit to 1 instance
+    max_size     = 2  # Optional: keep for future scaling
+    min_size     = 1  # Set to 1 for minimum
   }
 
   depends_on = [aws_eks_cluster.bop_eks_cluster]
@@ -148,9 +154,9 @@ resource "aws_eks_node_group" "node_group_monitoring" {
   subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Nodes only in the first AZ
 
   scaling_config {
-    desired_size = var.monitoring_desired_capacity
-    max_size     = var.monitoring_max_size
-    min_size     = var.monitoring_min_size
+    desired_size = 1  # Set to 1 for monitoring node
+    max_size     = 1  # Set to 1 for monitoring
+    min_size     = 1  # Set to 1 for monitoring
   }
 
   depends_on = [aws_eks_cluster.bop_eks_cluster]
