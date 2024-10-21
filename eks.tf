@@ -1,6 +1,6 @@
 # Create IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
-  name = "${var.eks_cluster_name}-role"
+  name = "bop-eks-cluster-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -25,11 +25,11 @@ resource "aws_iam_role_policy_attachment" "eks_policy" {
 
 # Create EKS Cluster
 resource "aws_eks_cluster" "bop_eks_cluster" {  # Updated cluster name reference
-  name     = var.eks_cluster_name
+  name     = "bop-eks-cluster"
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids = [
+    subnet_ids              = [
       aws_subnet.bop_private_subnet[0].id, 
       aws_subnet.bop_private_subnet[1].id  # Use only two AZs
     ]
@@ -106,15 +106,40 @@ resource "aws_iam_role_policy_attachment" "ecr_custom_policy_attachment" {
   policy_arn = aws_iam_policy.ecr_custom_policy.arn
 }
 
-# Node Group for Application (spans both AZs)
-resource "aws_eks_node_group" "node_group_application" {
+# Node Group for Application 1 (spans both AZs)
+resource "aws_eks_node_group" "application_node_group" {
   cluster_name    = aws_eks_cluster.bop_eks_cluster.name  # Updated reference
-  node_group_name = "${var.node_group_name}-application"
+  node_group_name = "${var.node_group_name}-application-1"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = [
     aws_subnet.bop_private_subnet[0].id, 
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
+  
+  # Set the instance type to t2.medium
+  instance_type   = "t2.medium"
+
+  scaling_config {
+    desired_size = var.app_desired_capacity
+    max_size     = var.app_max_size
+    min_size     = var.app_min_size
+  }
+
+  depends_on = [aws_eks_cluster.bop_eks_cluster]  # Updated reference
+}
+
+# Node Group for Application 2 (spans both AZs)
+resource "aws_eks_node_group" "application_node_group_1" {
+  cluster_name    = aws_eks_cluster.bop_eks_cluster.name  # Updated reference
+  node_group_name = "${var.node_group_name}-application-2"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+  subnet_ids      = [
+    aws_subnet.bop_private_subnet[0].id, 
+    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
+  ]
+
+  # Set the instance type to t2.medium
+  instance_type   = "t2.medium"
 
   scaling_config {
     desired_size = var.app_desired_capacity
