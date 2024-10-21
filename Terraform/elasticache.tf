@@ -34,7 +34,7 @@ resource "aws_elasticache_subnet_group" "bop_redis_subnet_group" {
 }
 
 # Create ElastiCache Redis Replication Group
-resource "aws_elasticache" "bop_redis" {
+resource "aws_elasticache_replication_group" "bop_redis" {
   replication_group_id = "bop-redis"
   description          = "Bop Redis"  
 
