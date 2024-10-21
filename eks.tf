@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "eks_policy" {
 }
 
 # Create EKS Cluster
-resource "aws_eks_cluster" "bop_eks_cluster" {  # Updated cluster name reference
+resource "aws_eks_cluster" "bop_eks_cluster" {
   name     = "bop-eks-cluster"
   role_arn = aws_iam_role.eks_role.arn
 
@@ -44,7 +44,6 @@ resource "aws_eks_cluster" "bop_eks_cluster" {  # Updated cluster name reference
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.node_group_name}-role"
 
-  # Add both EKS and EC2 to the trust relationship
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -73,7 +72,6 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
-# Attach EC2 Container Registry read-only policy
 resource "aws_iam_role_policy_attachment" "ecr_readonly_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
@@ -107,16 +105,12 @@ resource "aws_iam_role_policy_attachment" "ecr_custom_policy_attachment" {
 }
 
 # Node Group for Application 1 (spans both AZs)
-resource "aws_eks_node_group" "application_node_group" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name  # Updated reference
+resource "aws_eks_node_group" "application_node_group_1" {
+  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
   node_group_name = "${var.node_group_name}-application-1"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [
-    aws_subnet.bop_private_subnet[0].id, 
-    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
-  ]
+  subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Only in the first AZ
   
-  # Updated to use instance_types
   instance_types   = ["t2.medium"]
 
   scaling_config {
@@ -125,20 +119,16 @@ resource "aws_eks_node_group" "application_node_group" {
     min_size     = var.app_min_size
   }
 
-  depends_on = [aws_eks_cluster.bop_eks_cluster]  # Updated reference
+  depends_on = [aws_eks_cluster.bop_eks_cluster]
 }
 
 # Node Group for Application 2 (spans both AZs)
-resource "aws_eks_node_group" "application_node_group_1" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name  # Updated reference
+resource "aws_eks_node_group" "application_node_group_2" {
+  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
   node_group_name = "${var.node_group_name}-application-2"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [
-    aws_subnet.bop_private_subnet[0].id, 
-    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
-  ]
+  subnet_ids      = [aws_subnet.bop_private_subnet[1].id]  # Only in the second AZ
 
-  # Updated to use instance_types
   instance_types   = ["t2.medium"]
 
   scaling_config {
@@ -147,12 +137,12 @@ resource "aws_eks_node_group" "application_node_group_1" {
     min_size     = var.app_min_size
   }
 
-  depends_on = [aws_eks_cluster.bop_eks_cluster]  # Updated reference
+  depends_on = [aws_eks_cluster.bop_eks_cluster]
 }
 
 # Node Group for Monitoring (only in one AZ)
 resource "aws_eks_node_group" "node_group_monitoring" {
-  cluster_name    = aws_eks_cluster.bop_eks_cluster.name  # Updated reference
+  cluster_name    = aws_eks_cluster.bop_eks_cluster.name
   node_group_name = "${var.node_group_name}-monitoring"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = [aws_subnet.bop_private_subnet[0].id]  # Nodes only in the first AZ
@@ -163,5 +153,5 @@ resource "aws_eks_node_group" "node_group_monitoring" {
     min_size     = var.monitoring_min_size
   }
 
-  depends_on = [aws_eks_cluster.bop_eks_cluster]  # Updated reference
+  depends_on = [aws_eks_cluster.bop_eks_cluster]
 }
