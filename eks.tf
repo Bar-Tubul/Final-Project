@@ -116,8 +116,8 @@ resource "aws_eks_node_group" "application_node_group" {
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
   
-  # Set the instance type to t2.medium
-  instance_type   = "t2.medium"
+  # Updated to use instance_types
+  instance_types   = ["t2.medium"]
 
   scaling_config {
     desired_size = var.app_desired_capacity
@@ -138,8 +138,8 @@ resource "aws_eks_node_group" "application_node_group_1" {
     aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
   ]
 
-  # Set the instance type to t2.medium
-  instance_type   = "t2.medium"
+  # Updated to use instance_types
+  instance_types   = ["t2.medium"]
 
   scaling_config {
     desired_size = var.app_desired_capacity
