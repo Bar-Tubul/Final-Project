@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "default" {
-  name       = "rds-private-subnet-group"  # The name of the subnet group
+  name       = "bop-rds-private-subnet"  # The name of the subnet group
   subnet_ids = aws_subnet.bop_private_subnet[*].id  # Reference to the private subnets
 
   tags = {
