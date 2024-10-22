@@ -13,9 +13,17 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Use correct build syntax based on your environment
-                        def appImage = build("${ECR_APP_REPO}:LTS", './statuspage') // Pass the directory where the Dockerfile is
-                        appImage.push('LTS') // Push the application image to ECR
+                        // Login to ECR
+                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_APP_REPO'
+
+                        // Build the application Docker image
+                        sh 'docker build -t statuspage-app:LTS ./statuspage'
+
+                        // Tag the image with ECR repository URL
+                        sh 'docker tag statuspage-app:LTS $ECR_APP_REPO:LTS'
+
+                        // Push the image to ECR
+                        sh 'docker push $ECR_APP_REPO:LTS'
                     }
                 }
             }
@@ -25,9 +33,17 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build Nginx Docker image from the correct directory
-                        def nginxImage = build("${ECR_NGINX_REPO}:LTS", './nginx') // Pass the correct directory
-                        nginxImage.push('LTS') // Push the Nginx image to ECR
+                        // Login to ECR
+                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
+
+                        // Build the Nginx Docker image
+                        sh 'docker build -t nginx-bop:LTS ./nginx'
+
+                        // Tag the image with ECR repository URL
+                        sh 'docker tag nginx-bop:LTS $ECR_NGINX_REPO:LTS'
+
+                        // Push the image to ECR
+                        sh 'docker push $ECR_NGINX_REPO:LTS'
                     }
                 }
             }
