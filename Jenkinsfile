@@ -54,8 +54,8 @@ pipeline {
             steps {
                 script {
                     // Apply the application deployment and service files
-                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/deployment_app.yml'
-                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/service_app.yml'
+                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/statuspage-deployment.yaml'
+                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/statuspage-service.yaml'
                 }
             }
         }
@@ -64,8 +64,8 @@ pipeline {
             steps {
                 script {
                     // Apply the Nginx deployment and service files
-                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/deployment_nginx.yml'
-                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/service_nginx.yml'
+                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/nginx-deployment.yaml'
+                    sh 'kubectl apply -f $WORKSPACE/EKS-resources/nginx-service.yaml'
                 }
             }
         }
