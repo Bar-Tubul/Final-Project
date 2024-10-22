@@ -13,16 +13,15 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Run Kaniko inside a Docker container
-                        sh """
-                        docker run --rm \
-                        -v /var/run/docker.sock:/var/run/docker.sock \
-                        -v \$WORKSPACE:/workspace \
-                        gcr.io/kaniko-project/executor:latest \
-                        --context=/workspace \
-                        --dockerfile=/workspace/statuspage/Dockerfile \
-                        --destination=$ECR_APP_REPO:LTS
-                        """
+                        // Build the application image using the Docker plugin
+                        docker.image('gcr.io/kaniko-project/executor:latest').inside {
+                            sh """
+                            cp /workspace/statuspage/Dockerfile /workspace/Dockerfile
+                            """
+                            sh """
+                            docker build -t $ECR_APP_REPO:LTS -f /workspace/Dockerfile /workspace
+                            """
+                        }
                     }
                 }
             }
@@ -32,16 +31,15 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Run Kaniko inside a Docker container for Nginx
-                        sh """
-                        docker run --rm \
-                        -v /var/run/docker.sock:/var/run/docker.sock \
-                        -v \$WORKSPACE:/workspace \
-                        gcr.io/kaniko-project/executor:latest \
-                        --context=/workspace \
-                        --dockerfile=/workspace/Dockerfile-nginx \
-                        --destination=$ECR_NGINX_REPO:LTS
-                        """
+                        // Build the Nginx image using the Docker plugin
+                        docker.image('gcr.io/kaniko-project/executor:latest').inside {
+                            sh """
+                            cp /workspace/Dockerfile-nginx /workspace/Dockerfile-nginx
+                            """
+                            sh """
+                            docker build -t $ECR_NGINX_REPO:LTS -f /workspace/Dockerfile-nginx /workspace
+                            """
+                        }
                     }
                 }
             }
