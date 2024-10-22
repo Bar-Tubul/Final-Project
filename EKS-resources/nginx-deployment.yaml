@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop:1.0.2  # Your ECR image
+        image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop:latest  # Your ECR image
         ports:
         - containerPort: 80   # Port for HTTP
         - containerPort: 443   # Port for HTTPS
