@@ -17,10 +17,10 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = 'your-aws-region'
-        ECR_APP_REPO = 'your-application-ecr-repo-uri'
-        ECR_NGINX_REPO = 'your-nginx-ecr-repo-uri'
-        AWS_CREDENTIALS_ID = 'your-aws-credentials-id'
+        AWS_REGION = 'us-east-1'
+        ECR_APP_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/statuspage-bop'
+        ECR_NGINX_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop'
+        AWS_CREDENTIALS_ID = 'aws-jenkins-creds'
     }
 
     stages {
@@ -28,10 +28,10 @@ pipeline {
             steps {
                 container('kaniko') {
                     script {
-                        // Login to ECR
-                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_APP_REPO'
-                        // Build the application image using Kaniko
-                        sh 'executor --context $WORKSPACE --dockerfile $WORKSPACE/statuspage/Dockerfile --destination $ECR_APP_REPO:LTS'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
+                            // Build the application image using Kaniko
+                            sh 'executor --context $WORKSPACE --dockerfile $WORKSPACE/statuspage/Dockerfile --destination $ECR_APP_REPO:LTS'
+                        }
                     }
                 }
             }
@@ -41,10 +41,10 @@ pipeline {
             steps {
                 container('kaniko') {
                     script {
-                        // Login to ECR
-                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
-                        // Build the Nginx image using Kaniko
-                        sh 'executor --context $WORKSPACE --dockerfile $WORKSPACE/Dockerfile-nginx --destination $ECR_NGINX_REPO:LTS'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
+                            // Build the Nginx image using Kaniko
+                            sh 'executor --context $WORKSPACE --dockerfile $WORKSPACE/Dockerfile-nginx --destination $ECR_NGINX_REPO:LTS'
+                        }
                     }
                 }
             }
