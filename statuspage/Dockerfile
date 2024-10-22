@@ -21,10 +21,11 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Clone the Git repository
-RUN git clone https://github.com/peervetzler/Final-Project.git /app
+#RUN git clone https://github.com/peervetzler/Final-Project.git /app
 #RUN git clone -b Statuspage https://github.com/Bar-Tubul/Final-Project.git /app
 # Change working directory
-WORKDIR /app/statuspage/statuspage
+WORKDIR /app/statuspage
+COPY ./statuspage /app/statuspage
 
 # Expose any necessary ports (adjust based on your app)
 EXPOSE 8001
@@ -33,7 +34,7 @@ EXPOSE 8001
 RUN bash upgrade.sh
 
 # ine the entry point to run your app using Gunicorn
-WORKDIR /app/statuspage/statuspage/statuspage
+WORKDIR /app/statuspage/statuspage
 
 #Define the entry point to run your app using Gunicorn
-CMD ["/app/statuspage/statuspage/venv/bin/gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/statuspage/statuspage/gunicorn.py", "statuspage.wsgi:application"]
+CMD ["/app/statuspage/venv/bin/gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/statuspage/gunicorn.py", "statuspage.wsgi:application"]
