@@ -13,8 +13,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Use the image() function to create an Image object
-                        def appImage = image("${ECR_APP_REPO}:LTS").build('statuspage') // Build the application image
+                        // Build the application Docker image
+                        def appImage = build("${ECR_APP_REPO}:LTS", 'statuspage') // Build image from 'statuspage' directory
                         appImage.push('LTS') // Push the application image to ECR
                     }
                 }
@@ -25,8 +25,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Use the image() function to create an Image object
-                        def nginxImage = image("${ECR_NGINX_REPO}:LTS").build('.') // Build the Nginx image
+                        // Build the Nginx Docker image
+                        def nginxImage = build("${ECR_NGINX_REPO}:LTS", 'nginx') // Build image from 'nginx' directory or root
                         nginxImage.push('LTS') // Push the Nginx image to ECR
                     }
                 }
