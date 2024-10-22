@@ -13,15 +13,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the application image using the Docker plugin
-                        docker.image('gcr.io/kaniko-project/executor:latest').inside {
-                            sh """
-                            cp /workspace/statuspage/Dockerfile /workspace/Dockerfile
-                            """
-                            sh """
-                            docker build -t $ECR_APP_REPO:LTS -f /workspace/Dockerfile /workspace
-                            """
-                        }
+                        // Build the application Docker image
+                        docker.build("${ECR_APP_REPO}:LTS", "statuspage") // Assuming Dockerfile is in 'statuspage' directory
                     }
                 }
             }
@@ -31,15 +24,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the Nginx image using the Docker plugin
-                        docker.image('gcr.io/kaniko-project/executor:latest').inside {
-                            sh """
-                            cp /workspace/Dockerfile-nginx /workspace/Dockerfile-nginx
-                            """
-                            sh """
-                            docker build -t $ECR_NGINX_REPO:LTS -f /workspace/Dockerfile-nginx /workspace
-                            """
-                        }
+                        // Build the Nginx Docker image
+                        docker.build("${ECR_NGINX_REPO}:LTS", "nginx") // Assuming Dockerfile is in the root directory or specify path accordingly
                     }
                 }
             }
