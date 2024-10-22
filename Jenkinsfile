@@ -13,9 +13,9 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the application Docker image
-                        image("${ECR_APP_REPO}:LTS").build('statuspage') // Assuming Dockerfile is in 'statuspage' directory
-                        image("${ECR_APP_REPO}:LTS").push('LTS') // Push the application image to ECR
+                        // Use the image() function to create an Image object
+                        def appImage = image("${ECR_APP_REPO}:LTS").build('statuspage') // Build the application image
+                        appImage.push('LTS') // Push the application image to ECR
                     }
                 }
             }
@@ -25,9 +25,9 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the Nginx Docker image
-                        image("${ECR_NGINX_REPO}:LTS").build('nginx') // Assuming Dockerfile is in the root directory or specify path accordingly
-                        image("${ECR_NGINX_REPO}:LTS").push('LTS') // Push the Nginx image to ECR
+                        // Use the image() function to create an Image object
+                        def nginxImage = image("${ECR_NGINX_REPO}:LTS").build('.') // Build the Nginx image
+                        nginxImage.push('LTS') // Push the Nginx image to ECR
                     }
                 }
             }
