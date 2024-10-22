@@ -13,9 +13,15 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the application image using Kaniko
+                        // Run Kaniko inside a Docker container
                         sh """
-                        executor --context $WORKSPACE --dockerfile $WORKSPACE/statuspage/Dockerfile --destination $ECR_APP_REPO:LTS
+                        docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v \$WORKSPACE:/workspace \
+                        gcr.io/kaniko-project/executor:latest \
+                        --context=/workspace \
+                        --dockerfile=/workspace/statuspage/Dockerfile \
+                        --destination=$ECR_APP_REPO:LTS
                         """
                     }
                 }
@@ -26,9 +32,15 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Build the Nginx image using Kaniko
+                        // Run Kaniko inside a Docker container for Nginx
                         sh """
-                        executor --context $WORKSPACE --dockerfile $WORKSPACE/Dockerfile-nginx --destination $ECR_NGINX_REPO:LTS
+                        docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v \$WORKSPACE:/workspace \
+                        gcr.io/kaniko-project/executor:latest \
+                        --context=/workspace \
+                        --dockerfile=/workspace/Dockerfile-nginx \
+                        --destination=$ECR_NGINX_REPO:LTS
                         """
                     }
                 }
