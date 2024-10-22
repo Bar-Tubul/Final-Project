@@ -12,9 +12,9 @@ RUN mkdir -p /etc/ssl/private /etc/ssl/certs
 # Remove the default Nginx configuration
 RUN rm /etc/nginx/conf.d/default.conf
 
-RUN git clone -b Nginx https://github.com/Bar-Tubul/Final-Project.git /app
+RUN git clone https://github.com/Bar-Tubul/Final-Project.git /app
 
-RUN cp /app/nginx.conf /etc/nginx/conf.d/status-page.conf
+RUN cp /app/nginx/nginx.conf /etc/nginx/conf.d/status-page.conf
 
 # Generate a self-signed SSL certificate for HTTPS
 # Modify the subject to match your domain (status-page.example.com)
