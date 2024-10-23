@@ -18,4 +18,6 @@ spec:
         ports:
         - containerPort: 80   # Port for HTTP
         - containerPort: 443   # Port for HTTPS
+        imagePullPolicy: Always
+
 
