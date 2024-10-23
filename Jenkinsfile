@@ -52,6 +52,7 @@ pipeline {
                         // Apply the application deployment and service files
                         sh 'aws eks --region $AWS_REGION update-kubeconfig --name bop-eks-cluster'
                         sh "kubectl set image deployment/statuspage statuspage=$ECR_APP_REPO:latest" // Use the latest tag for deployment
+                        sh "kubectl rollout restart deployment/statuspage"
                         sh 'kubectl apply -f $WORKSPACE/EKS-resources/statuspage-service.yaml'
                     }
                 }
@@ -65,6 +66,7 @@ pipeline {
                         // Apply the Nginx deployment and service files
                         sh 'aws eks --region $AWS_REGION update-kubeconfig --name bop-eks-cluster'
                         sh "kubectl set image deployment/nginx nginx=$ECR_NGINX_REPO:latest" // Use the latest tag for deployment
+                        sh "kubectl rollout restart deployment/nginx"
                         sh 'kubectl apply -f $WORKSPACE/EKS-resources/nginx-service.yaml'
                     }
                 }
