@@ -17,13 +17,13 @@ pipeline {
                         sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_APP_REPO'
 
                         // Build the application Docker image
-                        sh 'docker build -t statuspage-app:LTS ./statuspage'
+                        sh 'docker build -t statuspage-app:latest ./statuspage'
 
                         // Tag the image with ECR repository URL
-                        sh 'docker tag statuspage-app:LTS $ECR_APP_REPO:LTS'
+                        sh 'docker tag statuspage-app:latest $ECR_APP_REPO:LTS'
 
                         // Push the image to ECR
-                        sh 'docker push $ECR_APP_REPO:LTS'
+                        sh 'docker push $ECR_APP_REPO:latest'
                     }
                 }
             }
@@ -37,13 +37,13 @@ pipeline {
                         sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
 
                         // Build the Nginx Docker image
-                        sh 'docker build -t nginx-bop:LTS ./nginx'
+                        sh 'docker build -t nginx-bop:latest ./nginx'
 
                         // Tag the image with ECR repository URL
-                        sh 'docker tag nginx-bop:LTS $ECR_NGINX_REPO:LTS'
+                        sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:LTS'
 
                         // Push the image to ECR
-                        sh 'docker push $ECR_NGINX_REPO:LTS'
+                        sh 'docker push $ECR_NGINX_REPO:latest'
                     }
                 }
             }
