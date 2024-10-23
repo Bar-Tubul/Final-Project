@@ -53,6 +53,7 @@ pipeline {
             steps {
                 script {
                     // Apply the application deployment and service files
+                    sh 'aws eks --region $AWS_REGION update-kubeconfig --name bop-eks-cluster'
                     sh 'kubectl apply -f $WORKSPACE/EKS-resources/statuspage-deployment.yaml'
                     sh 'kubectl apply -f $WORKSPACE/EKS-resources/statuspage-service.yaml'
                 }
@@ -63,6 +64,7 @@ pipeline {
             steps {
                 script {
                     // Apply the Nginx deployment and service files
+                    sh 'aws eks --region $AWS_REGION update-kubeconfig --name bop-eks-cluster'
                     sh 'kubectl apply -f $WORKSPACE/EKS-resources/nginx-deployment.yaml'
                     sh 'kubectl apply -f $WORKSPACE/EKS-resources/nginx-service.yaml'
                 }
