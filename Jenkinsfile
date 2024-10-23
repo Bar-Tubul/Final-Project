@@ -35,7 +35,7 @@ pipeline {
                         sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
 
                         // Build the Nginx Docker image using Dockerfile-nginx from the root directory
-                        sh 'docker build -t nginx-bop:latest -f Dockerfile-nginx .'
+                        sh 'docker build --no-cache -t nginx-bop:latest -f Dockerfile-nginx .'
 
                         // Push the image to ECR (this will overwrite the existing latest image)
                         sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:latest'
