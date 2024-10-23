@@ -20,7 +20,7 @@ pipeline {
                         sh 'docker build -t statuspage-app:latest ./statuspage'
 
                         // Tag the image with ECR repository URL
-                        sh 'docker tag statuspage-app:latest $ECR_APP_REPO:LTS'
+                        sh 'docker tag statuspage-app:latest $ECR_APP_REPO:latest'
 
                         // Push the image to ECR
                         sh 'docker push $ECR_APP_REPO:latest'
@@ -40,7 +40,7 @@ pipeline {
                         sh 'docker build -t nginx-bop:latest -f Dockerfile-nginx .'
 
                         // Tag the image with ECR repository URL
-                        sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:LTS'
+                        sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:latest'
 
                         // Push the image to ECR
                         sh 'docker push $ECR_NGINX_REPO:latest'
