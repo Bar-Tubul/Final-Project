@@ -13,7 +13,7 @@ spec:
         app: nginx 
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
+        prometheus.io/path: "/nginx_status"
         prometheus.io/port: "80"
       
     spec:
