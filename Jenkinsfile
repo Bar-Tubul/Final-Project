@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'peer' }
 
     environment {
         AWS_REGION = 'us-east-1'
