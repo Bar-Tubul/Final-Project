@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent1' }
+    agent { label 'docker' }
     environment {
         AWS_REGION = 'us-east-1'
         ECR_APP_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/statuspage-bop'
