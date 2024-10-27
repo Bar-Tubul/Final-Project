@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: statuspage
 spec:
-  replicas: 2  # Change to 2 replicas for rolling updates
+  replicas: 1  # Keep 1 replica for rolling update with minimal downtime
   selector:
     matchLabels:
       app: statuspage
@@ -12,9 +12,9 @@ spec:
       labels:
         app: statuspage
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"
-        prometheus.io/port: "8001"
+          prometheus.io/scrape: "true"
+          prometheus.io/path: "/metrics"
+          prometheus.io/port: "8001"
     spec:
       containers:
       - name: statuspage
@@ -23,7 +23,7 @@ spec:
         - containerPort: 8001
         imagePullPolicy: Always
   strategy:
-    type: RollingUpdate  # Set to RollingUpdate for seamless updates
+    type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1  # Allow 1 pod to be unavailable during the update
-      maxSurge: 1  # Allow 1 additional pod during the update
+      maxUnavailable: 0  # Ensure no pod is unavailable during the update
+      maxSurge: 1  # Allow 1 additional pod above the desired replica count during the update
