@@ -22,8 +22,3 @@ spec:
         ports:
         - containerPort: 8001
         imagePullPolicy: Always
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0  # Ensure no pod is unavailable during the update
-      maxSurge: 1  # Allow 1 additional pod above the desired replica count during the update
