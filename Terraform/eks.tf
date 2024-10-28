@@ -1,4 +1,4 @@
-# Create a Security Group for EKS Cluster
+# Create Security Group for EKS Cluster
 resource "aws_security_group" "eks_sg" {
   name   = "${var.eks_cluster_name}-sg"
   vpc_id = aws_vpc.bop_vpc.id  
@@ -8,37 +8,37 @@ resource "aws_security_group" "eks_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere on HTTP
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere on HTTPS
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow access for Redis on port 6379 from EKS Nodes
   ingress {
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]  # Allow access only from EKS nodes
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]
   }
 
   # Allow access for RDS on port 5432 from EKS Nodes
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]  # Allow access only from EKS nodes
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]
   }
 
-  # Allow all outbound traffic (required for cluster nodes to access the internet if needed)
+  # Allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"  # "-1" means all protocols
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -51,6 +51,14 @@ resource "aws_security_group" "eks_sg" {
 resource "aws_security_group" "eks_nodes" {
   vpc_id = aws_vpc.bop_vpc.id
   
+  # Allow inbound traffic on port 443 (optional, can be modified based on use case)
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust as necessary
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -95,13 +103,10 @@ resource "aws_eks_cluster" "my_cluster" {
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.bop_private_subnet[0].id, 
-      aws_subnet.bop_private_subnet[1].id  # Use only two AZs
-    ]
-    security_group_ids      = [aws_security_group.eks_sg.id]  # Attach the SG to the EKS cluster
-    endpoint_private_access = true  # Enable private access
-    endpoint_public_access  = false  # Disable public access for security
+    subnet_ids            = aws_subnet.bop_private_subnet[*].id
+    security_group_ids    = [aws_security_group.eks_sg.id]
+    endpoint_private_access = true
+    endpoint_public_access  = false
   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_policy]
@@ -111,7 +116,6 @@ resource "aws_eks_cluster" "my_cluster" {
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.node_group_name}-role"
 
-  # Add both EKS and EC2 to the trust relationship
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -119,8 +123,8 @@ resource "aws_iam_role" "eks_node_role" {
         Effect = "Allow"
         Principal = {
           Service = [
-            "eks.amazonaws.com",  # EKS service principal
-            "ec2.amazonaws.com"   # EC2 service principal
+            "eks.amazonaws.com",
+            "ec2.amazonaws.com"
           ]
         }
         Action = "sts:AssumeRole"
@@ -140,37 +144,9 @@ resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
-# Attach EC2 Container Registry read-only policy
 resource "aws_iam_role_policy_attachment" "ecr_readonly_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-# Create Custom ECR Policy
-resource "aws_iam_policy" "ecr_custom_policy" {
-  name        = "${var.node_group_name}-ECR-Access"
-  description = "Custom policy to allow access to ECR for pulling images"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-# Attach Custom ECR Policy to Node Groups
-resource "aws_iam_role_policy_attachment" "ecr_custom_policy_attachment" {
-  role       = aws_iam_role.eks_node_role.name
-  policy_arn = aws_iam_policy.ecr_custom_policy.arn
 }
 
 # Node Group for Application (spans both AZs)
@@ -178,10 +154,7 @@ resource "aws_eks_node_group" "node_group_application" {
   cluster_name    = aws_eks_cluster.my_cluster.name
   node_group_name = "${var.node_group_name}-application"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = [
-    aws_subnet.bop_private_subnet[0].id, 
-    aws_subnet.bop_private_subnet[1].id  # Nodes in both AZs
-  ]
+  subnet_ids      = aws_subnet.bop_private_subnet[*].id  # Nodes in both AZs
 
   scaling_config {
     desired_size = var.app_desired_capacity
