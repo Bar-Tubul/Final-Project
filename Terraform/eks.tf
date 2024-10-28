@@ -18,6 +18,22 @@ resource "aws_security_group" "eks_sg" {
     cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere on HTTPS
   }
 
+  # Allow access for Redis on port 6379 from EKS Nodes
+  ingress {
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]  # Allow access only from EKS nodes
+  }
+
+  # Allow access for RDS on port 5432 from EKS Nodes
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]  # Allow access only from EKS nodes
+  }
+
   # Allow all outbound traffic (required for cluster nodes to access the internet if needed)
   egress {
     from_port   = 0
@@ -28,6 +44,23 @@ resource "aws_security_group" "eks_sg" {
 
   tags = {
     Name = "${var.eks_cluster_name}-sg"
+  }
+}
+
+# Create Security Group for EKS Nodes
+resource "aws_security_group" "eks_nodes" {
+  vpc_id = aws_vpc.bop_vpc.id
+  
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.eks_cluster_name}-nodes-sg"
   }
 }
 
