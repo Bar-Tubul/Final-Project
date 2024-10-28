@@ -13,7 +13,7 @@ ALLOWED_HOSTS = ['*']
 DATABASE = {
     'NAME': 'status-page',         # Database name
     'USER': 'statuspage',               # PostgreSQL username
-    'PASSWORD': 'P@ssw0rd',           # PostgreSQL password
+    'PASSWORD': 'Passw0rd',           # PostgreSQL password
     'HOST': 'bop-statuspage.cx248m4we6k7.us-east-1.rds.amazonaws.com',      # Database server
     'PORT': '5432',               # Database port (leave blank for default)
     'CONN_MAX_AGE': 300,      # Max database connection age
