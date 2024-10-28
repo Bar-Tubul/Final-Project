@@ -1,22 +1,29 @@
 # Create a Security Group for EKS Cluster
 resource "aws_security_group" "eks_sg" {
   name   = "${var.eks_cluster_name}-sg"
-  vpc_id = aws_vpc.bop_vpc.id  # Replace with your VPC ID variable if different
+  vpc_id = aws_vpc.bop_vpc.id  
 
-  # Allow all inbound traffic
+  # Allow inbound traffic only on HTTP and HTTPS
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"  # "-1" means all protocols
-    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere on HTTP
   }
 
-  # Allow all outbound traffic
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere on HTTPS
+  }
+
+  # Allow all outbound traffic (required for cluster nodes to access the internet if needed)
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"  # "-1" means all protocols
-    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic to anywhere
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
