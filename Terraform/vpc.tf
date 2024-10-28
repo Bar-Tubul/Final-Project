@@ -137,6 +137,14 @@ resource "aws_security_group" "bop_statuspage_sg" {
     security_groups = [aws_security_group.bop_statuspage_sg.id]
   }
 
+  # Allow access for Jenkins on port 8080 from anywhere
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
