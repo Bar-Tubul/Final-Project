@@ -7,8 +7,8 @@ resource "aws_security_group" "bop_redis_sg" {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    # Replace with specific IP ranges, security groups, or VPC CIDR as needed
-    cidr_blocks = ["10.0.0.0/16"] # Example for VPC CIDR, restrict further as needed
+    # Allow traffic only from EKS Nodes security group
+    security_groups = [aws_security_group.eks_nodes.id]
   }
 
   # Allow all outbound traffic
@@ -40,14 +40,14 @@ resource "aws_elasticache_replication_group" "bop_redis" {
   description                = "Bop Redis"  
 
   engine                     = "redis"
-  node_type                  = "cache.t3.micro"               # Small instance for testing
-  num_cache_clusters         = 1                              # Only 1 node, no replicas
-  automatic_failover_enabled = false                          # No failover with a single node
+  node_type                  = "cache.t3.micro"
+  num_cache_clusters         = 1
+  automatic_failover_enabled = false
 
   security_group_ids         = [aws_security_group.bop_redis_sg.id]
   subnet_group_name          = aws_elasticache_subnet_group.bop_redis_subnet_group.name
 
-  port                       = 6379
+  port                       = 6379;
 
   tags = {
     Name = "bop-redis"
