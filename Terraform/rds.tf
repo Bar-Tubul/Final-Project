@@ -1,15 +1,16 @@
 # Create Security Group for RDS Instance
 resource "aws_security_group" "bop_rds_sg" {
   name        = "bop-rds-sg"
-  description = "Allow all traffic for RDS instance"
+  description = "Allow inbound PostgreSQL traffic on port 5432 for RDS instance"
   vpc_id      = aws_vpc.bop_vpc.id  # Reference the VPC where the RDS instance resides
 
-  # Allow all inbound traffic
+  # Allow inbound traffic on PostgreSQL port 5432
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"  # -1 means all protocols
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    # Replace with specific IP ranges or security groups as needed for your application
+    cidr_blocks = ["10.0.0.0/16"]  # Example VPC CIDR, tighten as needed
   }
 
   # Allow all outbound traffic
@@ -37,7 +38,7 @@ resource "aws_db_subnet_group" "default" {
 
 # Create RDS Instance
 resource "aws_db_instance" "default" {
-  allocated_storage    = 20  # Storage size in GB
+  allocated_storage    = 20                    # Storage size in GB
   engine               = "postgres"
   instance_class       = "db.t3.micro"
   username             = var.db_username
