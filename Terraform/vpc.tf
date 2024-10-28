@@ -121,20 +121,20 @@ resource "aws_security_group" "bop_statuspage_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow access for Redis on port 6379 (only from the web application security group)
+  # Allow access for Redis on port 6379 (only from the Redis security group)
   ingress {
     from_port   = 6379
     to_port     = 6379
     protocol    = "tcp"
-    security_groups = [aws_security_group.bop_statuspage_sg.id]
+    security_groups = [aws_security_group.bop_redis_sg.id]  # Assuming you have a separate SG for Redis
   }
 
-  # Allow access for RDS on port 5432 (only from the web application security group)
+  # Allow access for RDS on port 5432 (only from the RDS security group)
   ingress {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    security_groups = [aws_security_group.bop_statuspage_sg.id]
+    security_groups = [aws_security_group.bop_rds_sg.id]  # Assuming you have a separate SG for RDS
   }
 
   # Allow access for Jenkins on port 8080 from anywhere
@@ -142,7 +142,15 @@ resource "aws_security_group" "bop_statuspage_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust as necessary
+  }
+
+  # Allow access for EKS on port 6443 (Kubernetes API)
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    security_groups = [aws_security_group.bop_eks_sg.id]  # Assuming you have a separate SG for EKS
   }
 
   # Allow all outbound traffic
