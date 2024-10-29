@@ -52,7 +52,7 @@ variable "db_username" {
 variable "db_password" {
   description = "The master password for the RDS instance"
   type        = string
-  default     = "Passw0rd"
+  default     = "P@ssw0rd"
 }
 
 # EKS Cluster Name
