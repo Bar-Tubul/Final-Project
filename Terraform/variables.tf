@@ -71,7 +71,7 @@ variable "node_group_name" {
 variable "app_desired_capacity" {
   description = "Desired number of nodes for the application node group"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "app_max_size" {
