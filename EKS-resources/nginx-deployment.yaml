@@ -10,14 +10,14 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx 
+        app: nginx
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/nginx_status"
-        prometheus.io/port: "443"
+        prometheus.io/port: "8080"
         prometheus.io/insecure: "true"  # This is not always supported, check your version.
 
-      
+
     spec:
       containers:
       - name: nginx
@@ -25,6 +25,5 @@ spec:
         ports:
         - containerPort: 80   # Port for HTTP
         - containerPort: 443   # Port for HTTPS
+        - containerPort: 8080
         imagePullPolicy: Always
-
-
