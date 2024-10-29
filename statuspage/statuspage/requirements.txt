@@ -28,3 +28,4 @@ segno==1.6.1
 swagger-spec-validator==3.0.3
 typing_extensions==4.11.0
 setuptools>=65.0
+rq==1.16.2
