@@ -17,5 +17,7 @@ spec:
       protocol: TCP
       port: 443     # The service port for HTTPS
       targetPort: 443  # The target port on the pod
-
+    - name: status
+      port: 8080         # Ensure this port is available
+      targetPort: 8080   # Ensure your NGINX is configured to listen on this port
 
