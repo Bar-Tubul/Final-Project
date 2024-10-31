@@ -6,10 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install required packages: Python 3.10, git, and other dependencies
 RUN apt-get update && \
-    apt-get install -y software-properties-common git curl && \
+    apt-get install --no-install-recommends -y software-properties-common git curl && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.10=3.10.0-1ubuntu1~20.04 python3.10-venv=3.10.0-1ubuntu1~20.04 python3.10-dev=3.10.0-1ubuntu1~20.04 && \
+    apt-get install --no-install-recommends -y python3.10=3.10.4-1+ubuntu20.04.1 python3.10-venv=3.10.4-1+ubuntu20.04.1 python3.10-dev=3.10.4-1+ubuntu20.04.1 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.10 as the default
