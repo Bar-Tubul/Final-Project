@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx           # Ensure the label matches the selector in the ServiceMonitor
 spec:
-  type: LoadBalancer  # Change to NodePort if you prefer
+  type: NodePort  # Change to NodePort if you prefer
   selector:
     app: nginx
   ports:
