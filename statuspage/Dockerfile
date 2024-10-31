@@ -9,7 +9,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends software-properties-common git curl && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y --no-install-recommends python3.10=3.10* python3.10-venv=3.10* python3.10-dev=3.10* && \
+    apt-get install -y --no-install-recommends \
+    python3.10=3.10.15-1+focal1 \
+    python3.10-venv=3.10.15-1+focal1 \
+    python3.10-dev=3.10.15-1+focal1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.10 as the default
