@@ -1,4 +1,3 @@
-# Hadolint ignore=DL3008,DL3009,DL3015
 # Use Ubuntu 20.04 as the base image
 FROM ubuntu:20.04
 
@@ -7,10 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install required packages: Python 3.10, git, and other dependencies
 RUN apt-get update && \
-    apt-get install -y software-properties-common git curl && \
+    apt-get install -y --no-install-recommends software-properties-common git curl && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.10 python3.10-venv python3.10-dev
+    apt-get install -y --no-install-recommends python3.10=3.10.15-1+focal1 python3.10-venv=3.10.15-1+focal1 python3.10-dev=3.10.15-1+focal1 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.10 as the default
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
@@ -28,7 +28,7 @@ COPY ./statuspage /app/statuspage
 # Expose any necessary ports (adjust based on your app)
 EXPOSE 8001
 
-# Run the dependence for the application
+# Run the dependencies for the application
 RUN bash upgrade.sh
 
 # Change the working directory for the application entry point
