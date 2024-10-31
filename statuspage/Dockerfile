@@ -6,10 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install required packages: Python 3.10, git, and other dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common git curl && \
+    apt-get install -y software-properties-common git curl && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y --no-install-recommends python3.10=3.10.12-1~ubuntu20.04 python3.10-venv=3.10.12-1~ubuntu20.04 python3.10-dev=3.10.12-1~ubuntu20.04 && \
+    apt-get install -y python3.10=3.10.0-1ubuntu1~20.04 python3.10-venv=3.10.0-1ubuntu1~20.04 python3.10-dev=3.10.0-1ubuntu1~20.04 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.10 as the default
@@ -32,5 +32,4 @@ EXPOSE 8001
 RUN bash upgrade.sh
 
 # Define the entry point to run your app using Gunicorn
-WORKDIR /app/statuspage/statuspage
 CMD ["/app/statuspage/venv/bin/gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/statuspage/gunicorn.py", "statuspage.wsgi:application"]
