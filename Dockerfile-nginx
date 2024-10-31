@@ -20,5 +20,3 @@ EXPOSE 80
 
 # Start Nginx in the foreground to keep the container running
 CMD ["nginx", "-g", "daemon off;"]
-~
-~
