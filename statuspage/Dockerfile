@@ -1,4 +1,4 @@
-# Hadolint ignore=DL3008,Dl3015
+Hadolint ignore=DL3008,DL3009,DL3015
 # Use Ubuntu 20.04 as the base image
 FROM ubuntu:20.04
 
@@ -28,11 +28,11 @@ COPY ./statuspage /app/statuspage
 # Expose any necessary ports (adjust based on your app)
 EXPOSE 8001
 
-#  Run the dependence for the application
+# Run the dependence for the application
 RUN bash upgrade.sh
 
-# ine the entry point to run your app using Gunicorn
+# Change the working directory for the application entry point
 WORKDIR /app/statuspage/statuspage
 
-#Define the entry point to run your app using Gunicorn
+# Define the entry point to run your app using Gunicorn
 CMD ["/app/statuspage/venv/bin/gunicorn", "-b", "0.0.0.0:8001", "-c", "/app/statuspage/gunicorn.py", "statuspage.wsgi:application"]
