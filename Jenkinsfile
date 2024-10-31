@@ -21,9 +21,6 @@ pipeline {
                         // Push the image to ECR 
                         sh 'docker tag statuspage-app:latest $ECR_APP_REPO:latest'
                         sh 'docker push $ECR_APP_REPO:latest'
-
-                        // Remove the local application image
-                        sh 'docker rmi statuspage-app:latest'
                     }
                 }
             }
@@ -43,12 +40,13 @@ pipeline {
                         sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:latest'
                         sh 'docker push $ECR_NGINX_REPO:latest'
 
-                        // Remove the local Nginx image
-                        sh 'docker rmi nginx-bop:latest'
+                        // Force remove all local Docker images
+                        sh 'docker rmi -f $(docker images -q)'
                     }
                 }
             }
         }
+
         stage('Deploy Application') {
             steps {
                 script {
