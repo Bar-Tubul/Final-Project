@@ -1,4 +1,4 @@
-Hadolint ignore=DL3008,DL3009,DL3015
+# Hadolint ignore=DL3008,DL3009,DL3015
 # Use Ubuntu 20.04 as the base image
 FROM ubuntu:20.04
 
