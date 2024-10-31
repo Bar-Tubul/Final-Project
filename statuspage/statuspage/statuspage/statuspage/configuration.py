@@ -6,7 +6,7 @@
 # write access to the server via any other hostnames. The first FQDN in the list will be treated as the preferred name.
 #
 # Example: ALLOWED_HOSTS = ['status-page.example.com', 'status-page.internal.local']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['statuspage.lingiops.com', 'https://statuspage.lingiops.com', '*.lingiops.com']
 
 # PostgreSQL database configuration. See the Django documentation for a complete list of available parameters:
 #   https://docs.djangoproject.com/en/stable/ref/settings/#databases
@@ -83,16 +83,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Base URL path if accessing Status-Page within a directory. For example, if installed at
 # https://example.com/status-page/, set: BASE_PATH = 'status-page/'
 BASE_PATH = ''
-
 # API Cross-Origin Resource Sharing (CORS) settings. If CORS_ORIGIN_ALLOW_ALL is set to True, all origins will be
 # allowed. Otherwise, define a list of allowed origins using either CORS_ORIGIN_WHITELIST or
 # CORS_ORIGIN_REGEX_WHITELIST. For more information, see https://github.com/ottoyiu/django-cors-headers
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
-    # 'https://hostname.example.com',
+    'https://statuspage.lingiops.com',
+    'statuspage.lingiops.com'
 ]
 CORS_ORIGIN_REGEX_WHITELIST = [
-    # r'^(https?://)?(\w+\.)?example\.com$',
+    r'^(https?://)?(\w+\.)?lingiops\.com$',
 ]
 
 # Set to True to enable server debugging. WARNING: Debugging introduces a substantial performance penalty and may reveal
@@ -110,7 +110,6 @@ EMAIL = {
     'USE_TLS': False,
     'TIMEOUT': 10,  # seconds
     'FROM_EMAIL': '',
-    'SUBJECT_PREFIX': '[Status-Page] ',
 }
 
 # IP addresses recognized as internal to the system. The debugging toolbar will be available only to clients accessing
@@ -151,6 +150,9 @@ RQ_DEFAULT_TIMEOUT = 300
 
 # The name to use for the csrf token cookie.
 CSRF_COOKIE_NAME = 'csrftoken'
+
+# self added
+CSRF_TRUSTED_ORIGINS = ['https://statuspage.lingiops.com', 'https://*.lingiops.com']
 
 # The name to use for the session cookie.
 SESSION_COOKIE_NAME = 'sessionid'
