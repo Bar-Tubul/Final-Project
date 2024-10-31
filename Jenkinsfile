@@ -44,6 +44,18 @@ pipeline {
             }
         }
 
+        stage('Lint Dockerfile') {
+            steps {
+                script {
+                    // Lint the application Dockerfile
+                    sh 'hadolint ./statuspage/Dockerfile'
+                    
+                    // Lint the Nginx Dockerfile
+                    sh 'hadolint ./Dockerfile-nginx'
+                }
+            }
+        }
+
         stage('Deploy Application') {
             steps {
                 script {
