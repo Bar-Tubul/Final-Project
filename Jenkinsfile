@@ -6,7 +6,8 @@ pipeline {
         ECR_NGINX_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop'
         AWS_CREDENTIALS_ID = 'aws-jenkins-creds'
     }
-    
+
+    stages {
         stage('Build Application Image') {
             steps {
                 script {
