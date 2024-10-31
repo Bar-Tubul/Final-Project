@@ -20,9 +20,6 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python3 get-pip.py && \
     rm get-pip.py
 
-# Clone the Git repository
-#RUN git clone https://github.com/peervetzler/Final-Project.git /app
-#RUN git clone -b Statuspage https://github.com/Bar-Tubul/Final-Project.git /app
 # Change working directory
 WORKDIR /app/statuspage
 COPY ./statuspage /app/statuspage
