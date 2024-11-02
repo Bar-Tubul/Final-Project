@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"  # Change to your region
 }
 
-# Security Group עבור VPN
+# Security Group for VPN
 resource "aws_security_group" "vpn_sg" {
   vpc_id = "vpc-0aab7362a3bd6a284"  # Your VPC ID
   name   = "VPN-BOP-security-group"  # Name of the Security Group
@@ -47,12 +47,12 @@ resource "aws_security_group" "vpn_sg" {
   }
 }
 
-# מכונת EC2 עם OpenVPN Access Server
+# EC2 Instance with OpenVPN Access Server
 resource "aws_instance" "vpn_instance" {
   ami           = "ami-06e5a963b2dadea6f"  # OpenVPN Access Server AMI
   instance_type = "t2.micro"
   subnet_id     = "subnet-0a3f9ed74ab378865"  # Your public subnet ID
-  vpc_security_group_ids = [aws_security_group.vpn_sg.id]  # Update this line
+  vpc_security_group_ids = [aws_security_group.vpn_sg.id]  # Attach the security group
 
   key_name      = "Bar-Peer-Or"  # Your key name
 
