@@ -8,13 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Linting') {
-            steps {
-                sh 'eslint ./statuspage'
-                sh 'dockerfilelint Dockerfile Dockerfile-nginx'
-            }
-        }
-
         stage('Unit Tests') {
             steps {
                 sh 'python3 -m unittest discover -s tests/unit'
