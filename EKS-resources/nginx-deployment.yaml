@@ -17,14 +17,15 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/insecure: "true"  # This is not always supported, check your version.
 
-
     spec:
+      nodeSelector:
+        node-group: bop-node-group-application  # Ensures pods are deployed to the specified node group
       containers:
       - name: nginx
         image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop:latest  # Your ECR image
         ports:
         - containerPort: 80   # Port for HTTP
-        - containerPort: 443   # Port for HTTPS
+        - containerPort: 443  # Port for HTTPS
         - containerPort: 8080
         imagePullPolicy: Always
   strategy:
