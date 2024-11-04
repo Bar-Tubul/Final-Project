@@ -16,8 +16,6 @@ spec:
         prometheus.io/path: "/metrics"
         prometheus.io/port: "8001"
     spec:
-      nodeSelector:
-        node-group: bop-node-group-application  # Ensures pods are deployed to the specified node group
       containers:
       - name: statuspage
         image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/statuspage-bop:latest
