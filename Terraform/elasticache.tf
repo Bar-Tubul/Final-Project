@@ -15,7 +15,7 @@ resource "aws_security_group" "bop_redis_sg" {
     from_port       = 6379
     to_port         = 6379
     protocol        = "tcp"
-    security_groups = [aws_security_group.jenkins_sg.id]  # Assuming this is the Jenkins SG
+    security_groups = [aws_security_group.bop_statuspage_ec2.id]  # Assuming this is the Jenkins SG
   }
 
   # Allow all outbound traffic
