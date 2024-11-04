@@ -41,7 +41,7 @@ pipeline {
                 script {
                     sh 'kubectl rollout status deployment/statuspage'
                     sh 'kubectl rollout status deployment/nginx'
-                    sh 'curl -f http://<SERVICE_URL>/health'
+                    sh 'curl -f https://statuspage.lingiops.com/health'
                 }
             }
         }
