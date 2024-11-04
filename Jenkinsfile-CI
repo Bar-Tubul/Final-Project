@@ -1,0 +1,77 @@
+pipeline {
+    agent { label 'docker' }
+    environment {
+        AWS_REGION = 'us-east-1'
+        ECR_APP_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/statuspage-bop'
+        ECR_NGINX_REPO = '992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop'
+        AWS_CREDENTIALS_ID = 'aws-jenkins-creds'
+    }
+
+    stages {
+        stage('Linting') {
+            steps {
+                sh 'eslint ./statuspage'
+                sh 'dockerfilelint Dockerfile Dockerfile-nginx'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh 'python3 -m unittest discover -s tests/unit'
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                sh 'pytest tests/integration'
+            }
+        }
+
+        stage('Build and Security Scan Application Image') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
+                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_APP_REPO'
+                        sh 'docker build -t statuspage-app:latest ./statuspage'
+                        sh 'docker tag statuspage-app:latest $ECR_APP_REPO:latest'
+                        sh 'docker push $ECR_APP_REPO:latest'
+                        sh 'trivy image --severity HIGH,CRITICAL $ECR_APP_REPO:latest'
+                        sh 'docker rmi -f statuspage-app:latest'
+                    }
+                }
+            }
+        }
+
+        stage('Build and Security Scan Nginx Image') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
+                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
+                        sh 'docker build --no-cache -t nginx-bop:latest -f Dockerfile-nginx .'
+                        sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:latest'
+                        sh 'docker push $ECR_NGINX_REPO:latest'
+                        sh 'trivy image --severity HIGH,CRITICAL $ECR_NGINX_REPO:latest'
+                        sh 'docker rmi -f nginx-bop:latest'
+                    }
+                }
+            }
+        }
+
+        stage('Container Health Check') {
+            steps {
+                sh 'docker run --rm statuspage-app:latest health-check.sh'
+                sh 'docker run --rm nginx-bop:latest health-check.sh'
+                sh 'docker rmi -f $(docker images -q)' // Force-delete all Docker images
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI pipeline completed successfully!'
+        }
+        failure {
+            echo 'CI pipeline failed.'
+        }
+    }
+}
