@@ -50,11 +50,17 @@ pipeline {
             steps {
                 script {
                     // Remove all Docker images after health checks
-                    sh 'docker rmi -f $(docker images -q)' // Force-delete all Docker images
-                }
-            }
+                sh '''
+                    images=$(docker images -q)
+                    if [ -n "$images" ]; then
+                    docker rmi -f $images
+                else
+                    echo "No images to delete"
+                fi
+            '''
         }
     }
+} 
 
     post {
         success {
