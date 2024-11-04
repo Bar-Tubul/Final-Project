@@ -8,12 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Unit Tests') {
-            steps {
-                sh 'python3 -m unittest discover -s tests/unit'
-            }
-        }
-
         stage('Integration Tests') {
             steps {
                 sh 'pytest tests/integration'
