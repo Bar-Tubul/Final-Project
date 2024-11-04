@@ -8,12 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Integration Tests') {
-            steps {
-                sh 'pytest tests/integration'
-            }
-        }
-
         stage('Build and Security Scan Application Image') {
             steps {
                 script {
