@@ -16,7 +16,7 @@ pipeline {
                         sh 'docker build -t statuspage-app:latest ./statuspage'
                         sh 'docker tag statuspage-app:latest $ECR_APP_REPO:latest'
                         sh 'docker push $ECR_APP_REPO:latest'
-                        sh 'trivy image --severity HIGH,CRITICAL $ECR_APP_REPO:latest'
+                        sh 'trivy image --skip-update --severity HIGH,CRITICAL $ECR_APP_REPO:latest'
                         sh 'docker rmi -f statuspage-app:latest'
                     }
                 }
