@@ -36,33 +36,22 @@ pipeline {
             }
         }
 
-        stage('Container Health Check') {
+        stage('Remove all Docker Images') {
             steps {
                 script {
-                    // Placeholder for health check commands
-                    // Example: Replace this with actual health check commands
-                    sh 'echo "Running health checks..."' // Replace with actual health check
+                    // Remove all Docker images after processing
+                    sh '''
+                        images=$(docker images -q)
+                        if [ -n "$images" ]; then
+                            docker rmi -f $images
+                        else
+                            echo "No images to delete"
+                        fi
+                    '''
                 }
             }
         }
-
-        stage('Remove all Docker Images') {
-    steps {
-        script {
-            // Remove all Docker images after health checks
-            sh '''
-                images=$(docker images -q)
-                if [ -n "$images" ]; then
-                    docker rmi -f $images
-                else
-                    echo "No images to delete"
-                fi
-            '''
-        }
     }
-}
-
- 
 
     post {
         success {
