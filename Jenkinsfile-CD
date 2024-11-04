@@ -46,16 +46,6 @@ pipeline {
             }
         }
 
-        stage('Rollback Simulation') {
-            steps {
-                script {
-                    sh 'kubectl rollout undo deployment/statuspage'
-                    sh 'kubectl rollout undo deployment/nginx'
-                }
-            }
-        }
-    }
-
     post {
         success {
             echo 'CD pipeline completed successfully!'
