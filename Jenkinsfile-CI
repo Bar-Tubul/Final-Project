@@ -40,7 +40,7 @@ pipeline {
 
         stage('Container Health Check') {
             steps {
-                sh 'docker run --rm statuspage-app:latest health-check.sh'
+                sh 'docker run --rm statuspage-bop:latest health-check.sh'
                 sh 'docker run --rm nginx-bop:latest health-check.sh'
                 sh 'docker rmi -f $(docker images -q)' // Force-delete all Docker images
             }
