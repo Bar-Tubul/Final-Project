@@ -3,35 +3,28 @@ resource "aws_security_group" "eks_sg" {
   name   = "${var.eks_cluster_name}-sg"
   vpc_id = aws_vpc.bop_vpc.id  
 
-  # Allow inbound traffic only on HTTP and HTTPS
+  # Allow inbound HTTPS from the EKS Node Group security group
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow access for Redis on port 6379 from EKS Nodes
-  ingress {
-    from_port       = 6379
-    to_port         = 6379
+    from_port       = 443
+    to_port         = 443
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
 
-  # Allow access for RDS on port 5432 from EKS Nodes
+  # Allow HTTPS traffic from Jenkins
   ingress {
-    from_port       = 5432
-    to_port         = 5432
+    from_port       = 443
+    to_port         = 443
     protocol        = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
+    security_groups = [aws_security_group.jenkins_sg.id]
+  }
+
+  # Allow self-referencing traffic (all)
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.eks_sg.id]
   }
 
   # Allow all outbound traffic
@@ -50,13 +43,29 @@ resource "aws_security_group" "eks_sg" {
 # Create Security Group for EKS Nodes
 resource "aws_security_group" "eks_nodes" {
   vpc_id = aws_vpc.bop_vpc.id
-  
-  # Allow inbound traffic on port 443 (optional, can be modified based on use case)
+
+  # Allow HTTPS traffic from Jenkins security group
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Adjust as necessary
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.jenkins_sg.id]
+  }
+
+  # Allow all traffic from EKS Cluster security group
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.eks_sg.id]
+  }
+
+  # Allow all traffic from Node Group self-reference
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.eks_nodes.id]
   }
 
   # Allow all outbound traffic
@@ -103,8 +112,8 @@ resource "aws_eks_cluster" "my_cluster" {
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids            = aws_subnet.bop_private_subnet[*].id
-    security_group_ids    = [aws_security_group.eks_sg.id]
+    subnet_ids             = aws_subnet.bop_private_subnet[*].id
+    security_group_ids     = [aws_security_group.eks_sg.id]
     endpoint_private_access = true
     endpoint_public_access  = false
   }
