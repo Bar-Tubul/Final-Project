@@ -36,25 +36,11 @@ pipeline {
             }
         }
 
-        stage('Container Health Check') {
+        stage('Remove all Docker Images') {
             steps {
                 script {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID]]) {
-                        // Log in to ECR for pulling the images
-                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_APP_REPO'
-                        sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_NGINX_REPO'
-
-                        // Pull the images from ECR
-                        sh 'docker pull $ECR_APP_REPO:latest'
-                        sh 'docker pull $ECR_NGINX_REPO:latest'
-
-                        // Run health checks
-                        sh 'docker run --rm $ECR_APP_REPO:latest health-check.sh'
-                        sh 'docker run --rm $ECR_NGINX_REPO:latest health-check.sh'
-                    }
-                }
-                // Remove all Docker images after health checks
-                sh 'docker rmi -f $(docker images -q)' // Force-delete all Docker images
+                        // Remove all Docker images after health checks
+                        sh 'docker rmi -f $(docker images -q)' // Force-delete all Docker images
             }
         }
     }
