@@ -31,7 +31,7 @@ pipeline {
                         sh 'docker build --no-cache -t nginx-bop:latest -f Dockerfile-nginx .'
                         sh 'docker tag nginx-bop:latest $ECR_NGINX_REPO:latest'
                         sh 'docker push $ECR_NGINX_REPO:latest'
-                        sh 'trivy image --severity HIGH,CRITICAL $ECR_NGINX_REPO:latest'
+                        sh 'trivy image --skip-update --severity HIGH,CRITICAL $ECR_NGINX_REPO:latest'
                         sh 'docker rmi -f nginx-bop:latest'
                     }
                 }
