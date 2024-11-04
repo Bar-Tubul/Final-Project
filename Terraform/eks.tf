@@ -16,7 +16,7 @@ resource "aws_security_group" "eks_sg" {
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
-    security_groups = [aws_security_group.jenkins_sg.id]
+    security_groups = [aws_security_group.bop_statuspage_ec2.id]
   }
 
   # Allow self-referencing traffic (all)
@@ -49,7 +49,7 @@ resource "aws_security_group" "eks_nodes" {
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
-    security_groups = [aws_security_group.jenkins_sg.id]
+    security_groups = [aws_security_group.bop_statuspage_ec2.id]
   }
 
   # Allow all traffic from EKS Cluster security group
