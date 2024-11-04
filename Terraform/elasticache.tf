@@ -2,13 +2,20 @@
 resource "aws_security_group" "bop_redis_sg" {
   vpc_id = aws_vpc.bop_vpc.id
 
-  # Allow inbound traffic on Redis port 6379 from trusted sources only
+  # Allow inbound traffic on Redis port 6379 from EKS Nodes security group
   ingress {
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
-    # Allow traffic only from EKS Nodes security group
-    security_groups = [aws_security_group.eks_nodes.id]
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id]  # Allow traffic from EKS nodes
+  }
+
+  # Allow inbound traffic on Redis port 6379 from Jenkins instance security group
+  ingress {
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.jenkins_sg.id]  # Assuming this is the Jenkins SG
   }
 
   # Allow all outbound traffic
