@@ -18,7 +18,7 @@ resource "aws_security_group" "bop_rds_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    security_groups = [aws_security_group.jenkins_sg.id] # Replace with actual Jenkins SG reference
+    security_groups = [aws_security_group.bop_statuspage_ec2.id] # Replace with actual Jenkins SG reference
   }
 
   # Allow all outbound traffic
