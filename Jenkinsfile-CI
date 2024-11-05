@@ -7,7 +7,7 @@ pipeline {
         AWS_CREDENTIALS_ID = 'aws-jenkins-creds'
         DEPLOY_REPO_URL = 'https://github.com/Bar-Tubul/Final-project-deploys.git' // deploy repo
         DEPLOY_REPO_DIR = 'deploy-repo' // Directory to clone the repo
-        DEPLOYMENT_YAML_PATH = 'EKS-resources' // Path to your deployment YAML in the deploy repo
+        DEPLOYMENT_YAML_PATH = '.' // Path to your deployment YAML in the root directory
         IMAGE_VERSION = "${env.BUILD_NUMBER}-${env.BUILD_ID}" // Using Jenkins build number for versioning
     }
 
@@ -46,11 +46,15 @@ pipeline {
                     // Clone the deployment repo
                     sh 'git clone $DEPLOY_REPO_URL $DEPLOY_REPO_DIR'
                     dir("$DEPLOY_REPO_DIR") {
-                        // Update the image tag in all YAML files in the deployment path
+                        // Update the image tag in all YAML files in the root directory
                         sh '''
-                        for file in $DEPLOYMENT_YAML_PATH/*.yaml; do
-                            sed -i "s|image: $ECR_APP_REPO:.*|image: $ECR_APP_REPO:$IMAGE_VERSION|" "$file"
-                            sed -i "s|image: $ECR_NGINX_REPO:.*|image: $ECR_NGINX_REPO:$IMAGE_VERSION|" "$file"
+                        for file in *.yaml; do
+                            if [ -f "$file" ]; then
+                                sed -i "s|image: $ECR_APP_REPO:.*|image: $ECR_APP_REPO:$IMAGE_VERSION|" "$file"
+                                sed -i "s|image: $ECR_NGINX_REPO:.*|image: $ECR_NGINX_REPO:$IMAGE_VERSION|" "$file"
+                            else
+                                echo "No YAML files found in the root directory"
+                            fi
                         done
                         '''
                         // Commit and push changes using the GitHub token
