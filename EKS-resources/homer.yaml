@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homer
+  namespace: default  # Change if you are using a different namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homer
+  template:
+    metadata:
+      labels:
+        app: homer
+    spec:
+      containers:
+      - name: homer
+        image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/games-bop:homer  # Updated with your ECR image
+        ports:
+        - containerPort: 8080  # Make sure this matches the port your Homer app is using
+        imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homer
+  namespace: default  # Change if you are using a different namespace
+spec:
+  selector:
+    app: homer
+  ports:
+    - protocol: TCP
+      port: 80  # Port exposed by the service
+      targetPort: 8080  # Port on the container
+  type: ClusterIP  # Change to NodePort or LoadBalancer if needed
+

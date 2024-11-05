@@ -10,24 +10,21 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx 
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/nginx_status"
         prometheus.io/port: "8080"
         prometheus.io/insecure: "true"  # This is not always supported, check your version.
 
+      
     spec:
       containers:
       - name: nginx
         image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/nginx-bop:latest  # Your ECR image
         ports:
         - containerPort: 80   # Port for HTTP
-        - containerPort: 443  # Port for HTTPS
         - containerPort: 8080
         imagePullPolicy: Always
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0  # Ensure no pod is unavailable during the update
-      maxSurge: 1  # Allow 1 additional pod above the desired replica count during the update
+
+

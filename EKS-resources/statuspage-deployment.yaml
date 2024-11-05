@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: statuspage
 spec:
-  replicas: 1  # Keep 1 replica for rolling update with minimal downtime
+  replicas: 1
   selector:
     matchLabels:
       app: statuspage
@@ -22,8 +22,4 @@ spec:
         ports:
         - containerPort: 8001
         imagePullPolicy: Always
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0  # Ensure no pod is unavailable during the update
-      maxSurge: 1  # Allow 1 additional pod above the desired replica count during the update
+

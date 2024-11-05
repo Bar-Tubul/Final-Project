@@ -1,0 +1,10 @@
+# ExternalName Service for Homer
+apiVersion: v1
+kind: Service
+metadata:
+  name: homer
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: homer.default.svc.cluster.local
+

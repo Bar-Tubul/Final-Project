@@ -1,0 +1,10 @@
+# ExternalName Service for Argocd
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: argocd-server.argocd.svc.cluster.local
+

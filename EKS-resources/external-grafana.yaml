@@ -1,0 +1,10 @@
+# ExternalName Service for Grafana
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: bop-grafana.monitoring
+

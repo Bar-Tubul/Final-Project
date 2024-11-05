@@ -5,11 +5,11 @@ metadata:
   labels:
     app: statuspage           # Ensure the label matches the selector in the ServiceMonitor
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: statuspage           # Ensure this matches the app label in the Deployment
   ports:
     - name: http-metrics       # The port name must match the ServiceMonitor's port
       port: 8001               # The port that the service listens on (8001 for your app)
       targetPort: 8001         # Port on the pod to forward traffic to (application port)
-      nodePort: 30001          # The NodePort that will be used (optional, assigned if not provided)
+               

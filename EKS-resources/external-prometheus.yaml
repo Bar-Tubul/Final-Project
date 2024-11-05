@@ -1,0 +1,10 @@
+# ExternalName Service for Prometheus
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: bop-kube-prometheus-stack-prometheus.monitoring
+

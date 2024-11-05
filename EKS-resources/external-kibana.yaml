@@ -1,0 +1,10 @@
+# ExternalName Service for Kibana
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: kibana-logging.efklog
+

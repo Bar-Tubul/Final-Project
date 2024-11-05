@@ -1,0 +1,11 @@
+# ExternalName Service for Nginx
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: nginx-service.default.svc.cluster.local
+
+

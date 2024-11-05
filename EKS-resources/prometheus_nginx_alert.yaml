@@ -1,0 +1,57 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
+    release: bop
+  name: nginx-exporter-alerts
+spec:
+  groups:
+  - name: nginx-exporter-rules
+    rules:
+    - alert: NginxHighRequestLatency
+      expr: histogram_quantile(0.95, sum(rate(nginx_http_request_duration_seconds_bucket[5m])) by (le, instance)) > 1
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: High request latency on Nginx (instance {{ $labels.instance }})
+        description: "Nginx request latency is above 1 second for 95th percentile.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+    
+    - alert: NginxHighErrorRate
+      expr: sum(rate(nginx_http_requests_total{status=~"5.."}[5m])) by (instance) > 0.1
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: High error rate on Nginx (instance {{ $labels.instance }})
+        description: "Nginx is returning 5xx errors at a high rate.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: NginxDown
+      expr: up{job="nginx-exporter"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Nginx Exporter Down (instance {{ $labels.instance }})
+        description: "Nginx exporter is down for more than 5 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+    
+    - alert: NginxHighActiveConnections
+      expr: nginx_http_active_connections > 100
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: High active connections on Nginx (instance {{ $labels.instance }})
+        description: "Nginx has more than 100 active connections.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: NginxSlowResponses
+      expr: sum(rate(nginx_http_requests_total[5m])) by (instance) < 10
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Low request rate on Nginx (instance {{ $labels.instance }})
+        description: "Nginx is receiving fewer than 10 requests per minute.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+

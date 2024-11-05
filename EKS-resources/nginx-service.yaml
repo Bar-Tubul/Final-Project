@@ -10,14 +10,10 @@ spec:
     app: nginx
   ports:
     - name: http  # Name for the HTTP port
-      protocol: TCP
       port: 80     # The service port for HTTP
-      targetPort: 80  # The target port on the pod
-    - name: https  # Name for the HTTPS port
-      protocol: TCP
-      port: 443     # The service port for HTTPS
-      targetPort: 443  # The target port on the pod
+      targetPort: 80  # The target port on the port
     - name: status
       port: 8080         # Ensure this port is available
       targetPort: 8080   # Ensure your NGINX is configured to listen on this port
+
 
