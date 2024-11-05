@@ -46,10 +46,12 @@ pipeline {
                     // Clone the deployment repo
                     sh 'git clone $DEPLOY_REPO_URL $DEPLOY_REPO_DIR'
                     dir("$DEPLOY_REPO_DIR") {
-                        // Update the image tag in the deployment YAML file
+                        // Update the image tag in all YAML files in the deployment path
                         sh '''
-                        sed -i "s|image: $ECR_APP_REPO:.*|image: $ECR_APP_REPO:$IMAGE_VERSION|" $DEPLOYMENT_YAML_PATH
-                        sed -i "s|image: $ECR_NGINX_REPO:.*|image: $ECR_NGINX_REPO:$IMAGE_VERSION|" $DEPLOYMENT_YAML_PATH
+                        for file in $DEPLOYMENT_YAML_PATH/*.yaml; do
+                            sed -i "s|image: $ECR_APP_REPO:.*|image: $ECR_APP_REPO:$IMAGE_VERSION|" "$file"
+                            sed -i "s|image: $ECR_NGINX_REPO:.*|image: $ECR_NGINX_REPO:$IMAGE_VERSION|" "$file"
+                        done
                         '''
                         // Commit and push changes using the GitHub token
                         withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
