@@ -1,4 +1,4 @@
-# Create Security Group for EKS Cluster
+# Creates Security Group for EKS Cluster
 resource "aws_security_group" "eks_sg" {
   name   = "${var.eks_cluster_name}-sg"
   vpc_id = aws_vpc.bop_vpc.id  
@@ -11,7 +11,7 @@ resource "aws_security_group" "eks_sg" {
     security_groups = [aws_security_group.eks_nodes.id]
   }
 
-  # Allow HTTPS traffic from Jenkins
+  # Allow HTTPS traffic from the statuspage ec2 instance 
   ingress {
     from_port       = 443
     to_port         = 443
