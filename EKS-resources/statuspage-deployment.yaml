@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: statuspage
 spec:
-  replicas: 2  # Keep 1 replica for rolling update with minimal downtime
+  replicas: 1  # Keep 1 replica for rolling update with minimal downtime
   selector:
     matchLabels:
       app: statuspage
