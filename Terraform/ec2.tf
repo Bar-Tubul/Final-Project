@@ -1,4 +1,4 @@
-# Define the EC2 instance using the custom AMI
+# EC2 instance 
 resource "aws_instance" "bop_statuspage_ec2" {
   ami                    = "ami-xxxxxxxxxxxxxxx"  #  custom AMI ID
   instance_type          = "t2.medium"             
@@ -10,6 +10,6 @@ resource "aws_instance" "bop_statuspage_ec2" {
     Name = "bop-statuspage-ec2"
   }
 
-  # Ensure that this EC2 instance is created only after the VPC and dependencies are ready
+  
   depends_on = [aws_vpc.bop_vpc]
 }
