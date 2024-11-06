@@ -7,11 +7,12 @@ INGRESS_NAMESPACE="ingress-nginx"
 # Apply EKS basic deployments and services
 echo "Applying basic deployments and services..."
 kubectl apply -f homer.yaml
+kubectl apply -f tetris.yaml
+kubectl apply -f monkeytype.yaml
 kubectl apply -f nginx-service.yaml
 kubectl apply -f statuspage-deployment.yaml
 kubectl apply -f nginx-deployment.yaml
 kubectl apply -f statuspage-service.yaml
-
 # Install Prometheus stack with Helm
 echo "Installing Prometheus stack using Helm..."
 helm install bop prometheus-community/kube-prometheus-stack -n $MONITORING_NAMESPACE -f values.yaml
@@ -21,6 +22,9 @@ echo "Applying Prometheus and Nginx Prometheus exporter configurations..."
 kubectl apply -f nginx-prometheus-deployment.yaml
 kubectl apply -f nginx-prometheus-service.yaml
 kubectl apply -f prometheus_nginx_alert.yaml
+
+echo "Applying logging"
+kubectl apply -f ./04-EFK-Log/
 
 # Install Nginx Ingress Controller with Helm
 echo "Installing Nginx Ingress Controller using Helm..."

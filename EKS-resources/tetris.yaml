@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetris-deployment
+  labels:
+    app: tetris
+spec:
+  replicas: 3  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: tetris
+  template:
+    metadata:
+      labels:
+        app: tetris
+    spec:
+      containers:
+      - name: tetris
+        image: 992382545251.dkr.ecr.us-east-1.amazonaws.com/games-bop:tetris
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetris-service
+  labels:
+    app: tetris
+spec:
+  selector:
+    app: tetris
+  ports:
+    - protocol: TCP
+      port: 80         # The port the service will expose
+      targetPort: 80   # The port the container listens on
+  type: ClusterIP   # Use LoadBalancer if you want external access; for internal access, use ClusterIP
+---
+# ExternalName Service for Nginx
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetris-service
+  namespace: ingress-nginx
+spec:
+  type: ExternalName
+  externalName: tetris-service.default.svc.cluster.local
+
+
+

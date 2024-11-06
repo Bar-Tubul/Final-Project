@@ -53,6 +53,28 @@ spec:
                 port:
                   number: 80
 
+    - host: tetris.lingiops.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tetris-service
+                port:
+                  number: 80
+
+    - host: mankeytype.lingiops.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: monkeytype-service
+                port:
+                  number: 5000
+
     - host: grafana.lingiops.com
       http:
         paths:
@@ -92,5 +114,8 @@ spec:
         - grafana.lingiops.com
         - kibana.lingiops.com
         - argocd.lingiops.com
+        - tetris.lingiops.com
+        - mankeytype.lingiops.com
+
       secretName: tls-2048-bilgicloud
 
