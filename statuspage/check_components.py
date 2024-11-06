@@ -1,8 +1,33 @@
 import requests
+import boto3
+import json
+
+# Fetch the secret token from AWS Secrets Manager
+def get_secret():
+    secret_name = "statuspageToken"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    client = boto3.client("secretsmanager", region_name=region_name)
+
+    try:
+        # Retrieve the secret value
+        response = client.get_secret_value(SecretId=secret_name)
+        secret_string = response["SecretString"]
+        secret_dict = json.loads(secret_string)
+        return secret_dict["statuspage-bop-token"]
+    except Exception as e:
+        print("Error retrieving secret:", e)
+        return None
+
+# Get the API token from Secrets Manager
+api_token = get_secret()
+if not api_token:
+    print("Failed to retrieve API token from Secrets Manager.")
+    exit(1)
 
 # API base URL and headers
 base_url = "https://statuspage.lingiops.com/api"
-api_token = '2a53a2b773eec02d83c77e9bf430fb1d77e03084'
 headers = {
     "Authorization": f"Token {api_token}",
     "Content-Type": "application/json"
@@ -94,4 +119,3 @@ if response.status_code == 200:
 
 else:
     print(f"Failed to retrieve components: {response.status_code}, {response.text}")
-
