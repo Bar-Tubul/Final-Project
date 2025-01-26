@@ -13,4 +13,4 @@ resource "aws_instance" "bop_statuspage_ec2" {
   
   depends_on = [aws_vpc.bop_vpc]
 }
-Test
+Test2
